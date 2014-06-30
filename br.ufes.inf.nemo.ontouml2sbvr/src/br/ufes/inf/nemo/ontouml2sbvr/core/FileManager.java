@@ -80,8 +80,6 @@ public class FileManager
 		done = new LinkedList<Node>();
 	}
 	
-	
-	
 	private void CopyImage (String path, String imgname) throws IOException
 	{
 
@@ -289,35 +287,6 @@ public class FileManager
 		}
 	}
 	
-	public void DealNode (Node n, boolean sectionbreak)
-	{
-		if (serial)
-		{
-			if (done.contains(n))
-				return;
-			done.add(n);
-		}
-		
-		try
-		{
-			Class c = n.getRelatedClass();
-			
-			if (!serial) output.write(myhelper.StartSection(c.getName()));
-					
-			DealClassBasic(c, n.hasToggle());
-									
-			if (n.hasToggle()) CollapsibleSection(n);
-			
-			if (!serial) output.write(myhelper.EndSection());
-			
-			if (sectionbreak) SectionBreaker();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-		
 	private void DealClassBasic (Class c, boolean toggle)
 	{
 		try
@@ -341,6 +310,62 @@ public class FileManager
 			}
 			
 			if (serial) SectionBreaker();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void DealNode (Node n, boolean sectionbreak)
+	{
+		/*
+		 * If the 'serial' flag has been set and the node
+		 * has already been processed, then skip it and 
+		 * return, otherwise add to the list of the processed
+		 * nodes and go on.
+		 */
+		if (serial)
+		{
+			if (done.contains(n))
+				return;
+			done.add(n);
+		}
+		
+		try
+		{
+			/*
+			 * Get the Class instance related to the
+			 * argument Node and if the 'serial' flag
+			 * is unset, create a section starter tag. 
+			 */
+			Class c = n.getRelatedClass();
+			if (!serial) 
+				output.write(
+						myhelper.StartSection(
+								c.getName()));
+			
+			/*
+			 * First add the content for the Class
+			 * associated to the node, then if the Node
+			 * hasToggle() (i.e. has children or associations)
+			 * create also a collapsable section.
+			 */
+			DealClassBasic(c, n.hasToggle());
+			if (n.hasToggle()) 
+				CollapsibleSection(n);
+			
+			/*
+			 * If the 'serial' flag is unset, close
+			 * the current section with a section
+			 * ending tag. If the 'sectionbreak' argument
+			 * is set to true, add a section break tag.
+			 */
+			if (!serial) 
+				output.write(
+						myhelper.EndSection());
+			if (sectionbreak) 
+				SectionBreaker();
 		}
 		catch (IOException e)
 		{
