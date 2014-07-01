@@ -349,7 +349,7 @@ public class FileManager
 			 * First add the content for the Class
 			 * associated to the node, then if the Node
 			 * hasToggle() (i.e. has children or associations)
-			 * create also a collapsable section.
+			 * create also a collapsible section.
 			 */
 			DealClassBasic(c, n.hasToggle());
 			if (n.hasToggle()) 
