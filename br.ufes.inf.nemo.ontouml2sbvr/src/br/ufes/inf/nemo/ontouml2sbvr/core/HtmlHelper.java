@@ -366,7 +366,30 @@ public class HtmlHelper
 		
 		return Necessity(mynecessity);
 	}
-		
+
+	/**
+	 * Create an HTML tag representing the 'Description' caption for a SBVR
+	 * Vocabulary/Guidance Entry, with a certain content.
+	 * 
+	 * @param str the content of the 'Description' caption.
+	 * @return an HTML tag representing the 'Description' caption for 
+	 * 		   a given vocabulary/guidance entry.
+	 */
+	public String Description(String str) {
+		return DivLeft(Entry("Description")) 
+				+ DivRight(str) + LineFeed(); 
+	}
+	
+	/**
+	 * Create an HTML tag to represent plain text. 
+	 * 
+	 * @param str the plain text content
+	 * @return an HTML tag to represent plain text.
+	 */
+	public String Text(String str) {
+		return "<font>" + str + "</font>"; 
+	}
+	
 	private String LineFeed ()
 	{
 		return "\n";
