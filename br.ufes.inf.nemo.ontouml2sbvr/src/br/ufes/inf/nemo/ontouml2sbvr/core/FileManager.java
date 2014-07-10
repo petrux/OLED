@@ -288,7 +288,7 @@ public class FileManager
 		}
 	}
 	
-	private void dealClassBasic (Node n)
+	private void dealNodeBasic (Node n)
 	{
 		try
 		{			
@@ -372,7 +372,7 @@ public class FileManager
 			 * hasToggle() (i.e. has children or associations)
 			 * create also a collapsible section.
 			 */
-			dealClassBasic(n);
+			dealNodeBasic(n);
 			if (n.hasToggle()) 
 				collapsibleSection(n);
 			
