@@ -302,6 +302,9 @@ public class FileManager
 			// Concept Type
 			output.write(myhelper.ConceptType(getClassConcept(c)));
 			
+			//Description
+			output.write(myhelper.Description(myhelper.Text("Descrizione")));
+			
 			// Generalization Sets (as Specific)
 			LinkedList<String> gsets = RefOntoUMLUtil.IncludedInCs(c);
 			if (gsets != null)
