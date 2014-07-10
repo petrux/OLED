@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<title>SBVR Documentation: 02</title>
+
+<style type='text/css'>
+	div { margin-bottom:2px; margin-top:2px; float:left; }
+	div#container { margin:auto; width:85%; float:none; }
+	div.headerdiv { clear:left; }
+	div.leftdiv { width:200px; margin-left:25px; clear:left; }
+	div.rightdiv { }
+	div.collapsible { clear:left; display:none; padding:10px; margin-left:25px; }
+	div.sectiondiv { clear:left; border:3px double black; padding:10px; }
+	div.breaker { clear:left; height:25px; }
+	font { font-family:arial; font-size:medium; }
+	font.title { font-size:large; }
+	font.term { color:teal; text-decoration:underline; }
+	font.verb { color:blue; }
+	font.keyword { color:#FF6500; }
+	font.cs { color:teal; }
+	sub { vertical-align: -0.35em; }
+	.double { border-bottom: 3px double teal; line-height: 1.7em;}
+	img { border:none; }
+</style>
+
+<script type='text/javascript'>
+function toggle(name, anchor)
+{
+	if (document.getElementById(name).style.display == 'block')
+	{
+		document.getElementById(name).style.display = 'none';
+		anchor.innerHTML = "<img src='show.png'></img>" 
+	}
+	else
+	{
+		document.getElementById(name).style.display = 'block';
+		anchor.innerHTML = "<img src='hide.png'></img>" 
+	}
+}
+</script>
+</head>
+
+<body>
+<div id='container'>
+<div id='SuperKind_Section' class='sectiondiv'>
+<div class='headerdiv'><a href='javascript:;' onclick="toggle('SuperKind', this);"><img src='show.png'></img></a> <font class='term title'>SuperKind</font></div>
+<div class='leftdiv'><font>Concept Type:</font></div><div class='rightdiv'><font class='term'>fundamental concept</font></div>
+<div class='leftdiv'><font>Description</font></div><div class='rightdiv'><font>Descrizione</font></div>
+<div id='SuperKind' class='collapsible'>
+<div id='OneSubKind_Section' class='sectiondiv'>
+<div class='headerdiv'><font class='term title'>OneSubKind</font></div>
+<div class='leftdiv'><font>General Concept:</font></div><div class='rightdiv'><font class='term'>SuperKind</font></div>
+<div class='leftdiv'><font>Concept Type:</font></div><div class='rightdiv'><font class='term'>object type</font></div>
+<div class='leftdiv'><font>Description</font></div><div class='rightdiv'><font>Descrizione</font></div>
+</div>
+</div>
+</div>
+<div class='breaker'></div>
+
+</div>
+</body>
+</html>

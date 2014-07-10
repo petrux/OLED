@@ -25,7 +25,7 @@ public class OntoUML2SBVR
 				
 		// Open the model
 		File sourceFile = new File(fileName);
-		sourceFile.deleteOnExit();
+		//sourceFile.deleteOnExit();
 		
 		if (!sourceFile.isFile())
 		{
