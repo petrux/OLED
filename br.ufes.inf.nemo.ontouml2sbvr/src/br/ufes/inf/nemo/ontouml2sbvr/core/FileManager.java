@@ -25,6 +25,7 @@ import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
 import RefOntoUML.Property;
+import RefOntoUML.RefOntoUMLPackage;
 import RefOntoUML.SemiRigidMixinClass;
 import RefOntoUML.SubstanceSortal;
 import RefOntoUML.componentOf;
@@ -302,8 +303,7 @@ public class FileManager
 			// Concept Type
 			output.write(myhelper.ConceptType(getClassConcept(c)));
 			
-			//Description
-			output.write(myhelper.Description(myhelper.Text("Descrizione")));
+			createDescription(c);
 			
 			// Generalization Sets (as Specific)
 			LinkedList<String> gsets = RefOntoUMLUtil.IncludedInCs(c);
@@ -318,6 +318,21 @@ public class FileManager
 		{
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Create an expressive description for a given {@code RefOntoUML.Class} instance, 
+	 * containing reference to its specializations and relations it is involved in, appending
+	 * it to the final HTML file.
+	 * 
+	 * @param c the {@link RefOntoUML.Class} instance to be described.
+	 * @throws IOException if file writing doesn't end successfully.
+	 * @author petrux 
+	 * @since 10 July 2014
+	 */
+	private void createDescription(Class c) throws IOException {
+		//TODO: CREATE DESCRIPTION
+		output.write(myhelper.Description(myhelper.Text("Descrizione")));
 	}
 
 	public void DealNode (Node n, boolean sectionbreak)
