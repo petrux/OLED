@@ -229,7 +229,7 @@ public class FileManager
 		}
 	}
 	
-	private void CollapsibleSection (Node n)
+	private void collapsibleSection (Node n)
 	{
 		try
 		{
@@ -288,10 +288,13 @@ public class FileManager
 		}
 	}
 	
-	private void DealClassBasic (Class c, boolean toggle)
+	private void dealClassBasic (Node n)
 	{
 		try
 		{			
+			Class c = n.getRelatedClass();
+			boolean toggle = n.hasToggle();
+			
 			// Noun concept name
 			output.write(myhelper.NounConcept(c.getName(), toggle && !serial, serial));
 						
@@ -303,7 +306,7 @@ public class FileManager
 			// Concept Type
 			output.write(myhelper.ConceptType(getClassConcept(c)));
 			
-			createDescription(c);
+			createDescription(n);
 			
 			// Generalization Sets (as Specific)
 			LinkedList<String> gsets = RefOntoUMLUtil.IncludedInCs(c);
@@ -321,16 +324,16 @@ public class FileManager
 	}
 
 	/**
-	 * Create an expressive description for a given {@code RefOntoUML.Class} instance, 
+	 * Create an expressive description for a given {@code Node} instance, 
 	 * containing reference to its specializations and relations it is involved in, appending
 	 * it to the final HTML file.
 	 * 
-	 * @param c the {@link RefOntoUML.Class} instance to be described.
+	 * @param node the {@link Node} instance to be described.
 	 * @throws IOException if file writing doesn't end successfully.
 	 * @author petrux 
 	 * @since 10 July 2014
 	 */
-	private void createDescription(Class c) throws IOException {
+	private void createDescription(Node node) throws IOException {
 		//TODO: CREATE DESCRIPTION
 		output.write(myhelper.Description(myhelper.Text("Descrizione")));
 	}
@@ -369,9 +372,9 @@ public class FileManager
 			 * hasToggle() (i.e. has children or associations)
 			 * create also a collapsible section.
 			 */
-			DealClassBasic(c, n.hasToggle());
+			dealClassBasic(n);
 			if (n.hasToggle()) 
-				CollapsibleSection(n);
+				collapsibleSection(n);
 			
 			/*
 			 * If the 'serial' flag is unset, close
