@@ -64,7 +64,7 @@ public class HtmlHelper
 		return "</div>\n</body>\n</html>\n";
 	}
 		
-	private String Term (String str)
+	public String Term (String str)
 	{
 		return "<font class='term'>" + str + "</font>";
 	}
@@ -393,6 +393,15 @@ public class HtmlHelper
 	private String LineFeed ()
 	{
 		return "\n";
+	}
+	
+	/**
+	 * Generates the HTML snippet for a line break.
+	 * 
+	 * @return an HTML tag for a line break.
+	 */
+	public String lineBreak() {
+		return "</br>";
 	}
 	
 	public String SectionBreaker ()
