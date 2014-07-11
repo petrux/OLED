@@ -368,6 +368,9 @@ public class HtmlHelper
 	 * @param str the content of the 'Description' caption.
 	 * @return an HTML tag representing the 'Description' caption for 
 	 * 		   a given vocabulary/guidance entry.
+	 * 
+	 * @author petrux
+	 * @since 11 July 2014
 	 */
 	public String Description(String str) {
 		return DivLeft(Text("Description")) 
@@ -379,6 +382,9 @@ public class HtmlHelper
 	 * 
 	 * @param str the plain text content
 	 * @return an HTML tag to represent plain text.
+	 * 
+	 * @author petrux
+	 * @since 11 July 2014
 	 */
 	public String Text(String str) {
 		return "<font>" + str + "</font>"; 
@@ -393,6 +399,9 @@ public class HtmlHelper
 	 * Generates the HTML snippet for a line break.
 	 * 
 	 * @return an HTML tag for a line break.
+	 * 
+	 * @author petrux
+	 * @since 11 July 2014
 	 */
 	public String lineBreak() {
 		return "</br>";
@@ -405,6 +414,9 @@ public class HtmlHelper
 	 *  
 	 * @param name the named individual's name.
 	 * @return a HTML tag to represent a named individual.
+	 * 
+	 * @author petrux
+	 * @since 11 July 2014
 	 */
 	public String individual(String name) {
 		return "<font class=\"cs double\">" + name + "</font>";

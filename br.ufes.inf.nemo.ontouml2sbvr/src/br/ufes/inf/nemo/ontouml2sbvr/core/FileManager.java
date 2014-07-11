@@ -330,6 +330,7 @@ public class FileManager
 	 * 
 	 * @param node the {@link Node} instance to be described.
 	 * @throws IOException if file writing doesn't end successfully.
+	 * 
 	 * @author petrux 
 	 * @since 10 July 2014
 	 */
