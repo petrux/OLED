@@ -374,8 +374,8 @@ public class FileManager
 				 */
 				String being = " may be one of ";
 				if (isDisjoint && isComplete) being = " must be exactly one of ";
-				if (isDisjoint) being = " may be at most one of ";
-				if (isComplete) being = " must be at least one of ";
+				if (isDisjoint && !isComplete) being = " may be at most one of ";
+				if (isComplete && !isDisjoint) being = " must be at least one of ";
 				
 				/*
 				 * Translate the list of subclass names into a list 
