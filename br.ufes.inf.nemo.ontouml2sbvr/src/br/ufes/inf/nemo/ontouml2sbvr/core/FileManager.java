@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
 import RefOntoUML.Association;
@@ -333,11 +333,24 @@ public class FileManager
 	 * @author petrux 
 	 * @since 10 July 2014
 	 */
+	//TODO: CREATE DESCRIPTION
 	private void createDescription(Node node) throws IOException {
-		//TODO: CREATE DESCRIPTION
-		output.write(myhelper.Description(myhelper.Text("Descrizione")));
+		String superClassName = node.getRelatedClass().getName();
+		StringBuilder descriptionBuilder = new StringBuilder();
+		
+		//Solitary children.
+		List<Node> solitaryChildren = node.getSChildren();
+		if (solitaryChildren != null && solitaryChildren.size() > 0) {
+			for (Node child : solitaryChildren)
+				descriptionBuilder.append("A " + superClassName 
+						+ " can be a " + child.getRelatedClass().getName() + ". ");
+		}
+		
+		String description = descriptionBuilder.toString();
+		if (description.length() > 0)
+			output.write(myhelper.Description(description));
 	}
-
+	
 	public void DealNode (Node n, boolean sectionbreak)
 	{
 		/*
