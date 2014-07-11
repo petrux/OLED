@@ -342,8 +342,12 @@ public class FileManager
 		List<Node> solitaryChildren = node.getSChildren();
 		if (solitaryChildren != null && solitaryChildren.size() > 0) {
 			for (Node child : solitaryChildren)
-				descriptionBuilder.append("A " + superClassName 
-						+ " can be a " + child.getRelatedClass().getName() + ". ");
+				descriptionBuilder.append(
+						myhelper.Text("A ") + 
+						myhelper.Term(superClassName) + 
+						myhelper.Text(" can be a ") + 
+						myhelper.Term(child.getRelatedClass().getName()) + 
+						myhelper.Text(".") + myhelper.lineBreak());
 		}
 		
 		String description = descriptionBuilder.toString();
