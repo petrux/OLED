@@ -94,11 +94,6 @@ public class HtmlHelper
 		return "<font class='keyword title'>" + str + "</font>";
 	}
 	
-	private String Entry (String str)
-	{
-		return "<font>" + str + "</font>";
-	}	
-	
 	private String CS (String str)
 	{
 		return "<span class='double'><font class='cs'>" + str + "</font></span>";
@@ -199,7 +194,7 @@ public class HtmlHelper
 	
 	public String ConceptType (String str)
 	{
-		return DivLeft(Entry("Concept Type:")) + DivRight(Term(str)) + LineFeed();
+		return DivLeft(Text("Concept Type:")) + DivRight(Term(str)) + LineFeed();
 	}
 	
 	public String GeneralConcept (LinkedList<String> parents, boolean anchor)
@@ -220,17 +215,17 @@ public class HtmlHelper
 				str += ", ";
 		}
 		
-		return DivLeft(Entry("General Concept:")) + DivRight(str) + LineFeed();
+		return DivLeft(Text("General Concept:")) + DivRight(str) + LineFeed();
 	}
 	
 	private String Definition (String str)
 	{
-		return DivLeft(Entry("Definition:")) + DivRight(str) + LineFeed();
+		return DivLeft(Text("Definition:")) + DivRight(str) + LineFeed();
 	}
 	
 	private String Necessity (String str)
 	{
-		return DivLeft(Entry("Necessity:")) + DivRight(str) + LineFeed();
+		return DivLeft(Text("Necessity:")) + DivRight(str) + LineFeed();
 	}
 	
 	public String VerbConcept (String relata1, String assoc, String relata2, boolean reverse, boolean anchor)
@@ -376,7 +371,7 @@ public class HtmlHelper
 	 * 		   a given vocabulary/guidance entry.
 	 */
 	public String Description(String str) {
-		return DivLeft(Entry("Description")) 
+		return DivLeft(Text("Description")) 
 				+ DivRight(str) + LineFeed(); 
 	}
 	
