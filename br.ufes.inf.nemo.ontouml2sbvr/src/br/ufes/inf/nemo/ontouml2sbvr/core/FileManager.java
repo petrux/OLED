@@ -395,32 +395,30 @@ public class FileManager
 					subclassListBuilder.append(myhelper.Term(subclassName));
 				}
 				
-				descriptionBuilder.append(
-						myhelper.Text("According to the ") +
-						myhelper.Text(categorizationType) +
-						myhelper.Text(" ") +
-						myhelper.individual(gsName) +
-						myhelper.Text(" a ") +
-						myhelper.Term(superClassName) +
-						myhelper.Text(being) +
-						subclassListBuilder.toString() +
-						myhelper.Text(".") + 
-						myhelper.lineBreak());
-				
+				descriptionBuilder.append(myhelper.Text("According to the "));
+				descriptionBuilder.append(myhelper.Text(categorizationType));
+				descriptionBuilder.append(myhelper.Text(" "));
+				descriptionBuilder.append(myhelper.individual(gsName));
+				descriptionBuilder.append(myhelper.Text(" a "));
+				descriptionBuilder.append(myhelper.Term(superClassName));
+				descriptionBuilder.append(myhelper.Text(being));
+				descriptionBuilder.append(subclassListBuilder.toString());
+				descriptionBuilder.append(myhelper.Text(".")); 
+				descriptionBuilder.append(myhelper.lineBreak());
 			}
 		}
 		
 		//Solitary children.
 		List<Node> solitaryChildren = node.getSChildren();
 		if (solitaryChildren != null && solitaryChildren.size() > 0) {
-			for (Node child : solitaryChildren)
-				descriptionBuilder.append(
-						myhelper.Text("A ") + 
-						myhelper.Term(superClassName) + 
-						myhelper.Text(" may be a ") + 
-						myhelper.Term(child.getRelatedClass().getName()) + 
-						myhelper.Text(".") + 
-						myhelper.lineBreak());
+			for (Node child : solitaryChildren) {
+				descriptionBuilder.append(myhelper.Text("A ")); 	
+				descriptionBuilder.append(myhelper.Term(superClassName)); 
+				descriptionBuilder.append(myhelper.Text(" may be a ")); 
+				descriptionBuilder.append(myhelper.Term(child.getRelatedClass().getName())); 
+				descriptionBuilder.append(myhelper.Text(".")); 
+				descriptionBuilder.append(myhelper.lineBreak());
+			}
 		}
 		
 		String description = descriptionBuilder.toString();
