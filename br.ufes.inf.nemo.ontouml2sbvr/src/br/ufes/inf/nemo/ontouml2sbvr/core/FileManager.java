@@ -338,6 +338,78 @@ public class FileManager
 		String superClassName = node.getRelatedClass().getName();
 		StringBuilder descriptionBuilder = new StringBuilder();
 		
+		//Child partitions
+		List<ChildPartition> partitions = node.getChildPartitions();
+		if (partitions != null && partitions.size() > 0) {
+			for (ChildPartition partition : partitions) {
+				GeneralizationSet gs = partition.getGS();
+				String gsName = RefOntoUMLUtil.getGSetName(gs);
+				boolean isDisjoint = gs.isIsDisjoint();
+				boolean isComplete = gs.isIsCovering();
+				LinkedList<String> sNames = RefOntoUMLUtil.getGSetSpecificsName(gs);
+				
+				/*
+				 * According to the 
+				 * [categorization scheme|segmentation] CS, 
+				 * a SUPERCLASS
+				 * 1. {}: may be one of
+				 * 2. {disjoint}: may be at most one of
+				 * 3. {complete}: must be at least one of
+				 * 4. {disjoint, complete}: must be exactly one of
+				 * a SUBCLASS_1 or a SUBCLASS_2 or... a SUBCLASS_N
+				 */
+				
+				/*
+				 * check if we are dealing with a segmentation 
+				 * (i.e. a {disjoint, complete} generalization
+				 * set) or not.
+				 */
+				String categorizationType = (isDisjoint && isComplete) 
+						? "segmentation" 
+						: "categorization scheme"; 
+				
+				/*
+				 * Verbalize the subclassing according to the (eventual)
+				 * disjointness and/or completeness of the generalization set 
+				 */
+				String being = " may be one of ";
+				if (isDisjoint && isComplete) being = " must be exactly one of ";
+				if (isDisjoint) being = " may be at most one of ";
+				if (isComplete) being = " must be at least one of ";
+				
+				/*
+				 * Translate the list of subclass names into a list 
+				 * of alternatives, according to the proper SBVR
+				 * typographical conventions.
+				 */
+				boolean isFirst = true;
+				StringBuilder subclassListBuilder = new StringBuilder();
+				for (String subclassName : sNames) {
+					if (isFirst) {
+						subclassListBuilder.append(myhelper.Text("a "));
+						isFirst = false;
+					}
+					else {
+						subclassListBuilder.append(myhelper.Text(" or a "));
+					}
+					subclassListBuilder.append(myhelper.Term(subclassName));
+				}
+				
+				descriptionBuilder.append(
+						myhelper.Text("According to the ") +
+						myhelper.Text(categorizationType) +
+						myhelper.Text(" ") +
+						myhelper.individual(gsName) +
+						myhelper.Text(" a ") +
+						myhelper.Term(superClassName) +
+						myhelper.Text(being) +
+						subclassListBuilder.toString() +
+						myhelper.Text(".") + 
+						myhelper.lineBreak());
+				
+			}
+		}
+		
 		//Solitary children.
 		List<Node> solitaryChildren = node.getSChildren();
 		if (solitaryChildren != null && solitaryChildren.size() > 0) {
@@ -345,9 +417,10 @@ public class FileManager
 				descriptionBuilder.append(
 						myhelper.Text("A ") + 
 						myhelper.Term(superClassName) + 
-						myhelper.Text(" can be a ") + 
+						myhelper.Text(" may be a ") + 
 						myhelper.Term(child.getRelatedClass().getName()) + 
-						myhelper.Text(".") + myhelper.lineBreak());
+						myhelper.Text(".") + 
+						myhelper.lineBreak());
 		}
 		
 		String description = descriptionBuilder.toString();
