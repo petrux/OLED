@@ -12,7 +12,6 @@ public class HtmlHelper
 	{
 		divNum = new HashMap<String, Integer>();
 	}
-	
 	public String StartDocument (String title)
 	{
 		return  "<!DOCTYPE HTML>\n" +
@@ -397,6 +396,18 @@ public class HtmlHelper
 	 */
 	public String lineBreak() {
 		return "</br>";
+	}
+	
+	/**
+	 * Generates the HTML tag to represent a named individual. 
+	 * Please note that also referenced Categorization Scheme should
+	 * be mentioned following this convention.
+	 *  
+	 * @param name the named individual's name.
+	 * @return a HTML tag to represent a named individual.
+	 */
+	public String individual(String name) {
+		return "<font class=\"cs double\">" + name + "</font>";
 	}
 	
 	public String SectionBreaker ()
