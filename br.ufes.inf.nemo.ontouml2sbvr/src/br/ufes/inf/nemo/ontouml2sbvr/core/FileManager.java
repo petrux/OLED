@@ -25,7 +25,6 @@ import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
 import RefOntoUML.Property;
-import RefOntoUML.RefOntoUMLPackage;
 import RefOntoUML.SemiRigidMixinClass;
 import RefOntoUML.SubstanceSortal;
 import RefOntoUML.componentOf;
