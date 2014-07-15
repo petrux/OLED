@@ -1,1 +1,9 @@
 bin/
+.svn/
+Desktop.ini
+conf/
+db/
+format
+hooks/
+locks/
+svn.ico
