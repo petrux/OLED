@@ -11,6 +11,9 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
 import RefOntoUML.Association;
@@ -25,6 +28,7 @@ import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
 import RefOntoUML.Property;
+import RefOntoUML.Relator;
 import RefOntoUML.SemiRigidMixinClass;
 import RefOntoUML.SubstanceSortal;
 import RefOntoUML.componentOf;
@@ -418,6 +422,18 @@ public class FileManager
 				descriptionBuilder.append(myhelper.Term(child.getRelatedClass().getName())); 
 				descriptionBuilder.append(myhelper.Text(".")); 
 				descriptionBuilder.append(myhelper.lineBreak());
+				
+				Class childClass = child.getRelatedClass();
+				if (childClass instanceof RefOntoUML.Role) {
+					RefOntoUML.Relator relator = ((RefOntoUML.Role)childClass).relator();
+					descriptionBuilder.append(myhelper.Text("A "));
+					descriptionBuilder.append(myhelper.Term(superClassName));
+					descriptionBuilder.append(myhelper.Text(" may partecipate in a relation of type "));
+					descriptionBuilder.append(myhelper.Term(relator.getName()));
+					descriptionBuilder.append(myhelper.Text(" in the role of a "));
+					descriptionBuilder.append(myhelper.Term(childClass.getName()));
+					descriptionBuilder.append(myhelper.lineBreak());
+				}
 			}
 		}
 		
