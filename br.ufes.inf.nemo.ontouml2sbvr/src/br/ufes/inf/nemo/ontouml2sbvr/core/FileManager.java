@@ -339,8 +339,28 @@ public class FileManager
 	 */
 	//TODO: CREATE DESCRIPTION
 	private void createDescription(Node node) throws IOException {
+		Class class_ = node.getRelatedClass();
 		String superClassName = node.getRelatedClass().getName();
 		StringBuilder descriptionBuilder = new StringBuilder();
+		
+		//Relator description:
+		if (class_ instanceof RefOntoUML.Relator) {
+			RefOntoUML.Relator relator = (RefOntoUML.Relator)class_;
+			descriptionBuilder.append(myhelper.Text("An instance of a "));
+			descriptionBuilder.append(myhelper.Term(relator.getName()));
+			descriptionBuilder.append(myhelper.Text(" involves"));
+			for (int i = 0; i < relator.mediated().size(); i++) {
+				Classifier role = relator.mediated().get(i);
+				descriptionBuilder.append(myhelper.Text(" a "));
+				descriptionBuilder.append(myhelper.Term(role.getName()));
+				if (i < relator.mediated().size() - 2)
+					descriptionBuilder.append(myhelper.Text(","));
+				else if (i == relator.mediated().size() - 2)
+					descriptionBuilder.append(myhelper.Text(" and"));
+			}
+			descriptionBuilder.append(myhelper.Text("."));
+			descriptionBuilder.append(myhelper.lineBreak());
+		}
 		
 		//Child partitions
 		List<ChildPartition> partitions = node.getChildPartitions();
