@@ -1,5 +1,6 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class TreeProcessor
 	LinkedList<Node> mainNodes;
 	HashMap<Class, Node> class2node;
 	HashMap<String, Classifier> associationRoles;
+	HashMap<Relator, List<Derivation>> relator2derivations;
 	
 	public TreeProcessor()
 	{
@@ -20,6 +22,7 @@ public class TreeProcessor
 		mainNodes = new LinkedList<Node>();
 		class2node = new HashMap<Class, Node>();
 		associationRoles = new HashMap<String, Classifier>();
+		relator2derivations = new HashMap<>();
 	}
 	
 	public void ProcessClass (Class c)
@@ -31,6 +34,15 @@ public class TreeProcessor
 	
 	public void ProcessAssociation (Association a)
 	{
+		if (a instanceof Derivation) {
+			Derivation derivation = (Derivation)a;
+			Relator relator = (Relator)derivation.relator();
+			if (!this.relator2derivations.containsKey(relator))
+				this.relator2derivations.put(relator, new ArrayList<Derivation>());
+			this.relator2derivations.get(relator).add(derivation);
+			return;
+		}
+		
 		// just binary associations (not treating derivation)
 		if (a.getMemberEnd().size() != 2) return;
 		
