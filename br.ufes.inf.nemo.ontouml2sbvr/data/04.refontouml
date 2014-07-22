@@ -45,4 +45,14 @@
       <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_at7-Ngz0EeSmVf1dOxarew" value="1"/>
     </ownedEnd>
   </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:Derivation" xmi:id="_ll1loA6FEeSLmaujWL8EtQ" name="Derivation1" visibility="public" memberEnd="_ll1loQ6FEeSLmaujWL8EtQ _ll1lpA6FEeSLmaujWL8EtQ" navigableOwnedEnd="_ll1loQ6FEeSLmaujWL8EtQ _ll1lpA6FEeSLmaujWL8EtQ">
+    <ownedEnd xmi:id="_ll1loQ6FEeSLmaujWL8EtQ" name="material1" type="_at7-MAz0EeSmVf1dOxarew" association="_ll1loA6FEeSLmaujWL8EtQ">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_ll1log6FEeSLmaujWL8EtQ" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_ll1low6FEeSLmaujWL8EtQ" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_ll1lpA6FEeSLmaujWL8EtQ" name="marriage" type="_IrX9AAy6EeSsbO94-LYZNg" isReadOnly="true" association="_ll1loA6FEeSLmaujWL8EtQ">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_ll1lpQ6FEeSLmaujWL8EtQ" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_ll1lpg6FEeSLmaujWL8EtQ" value="1"/>
+    </ownedEnd>
+  </packagedElement>
 </RefOntoUML:Model>
