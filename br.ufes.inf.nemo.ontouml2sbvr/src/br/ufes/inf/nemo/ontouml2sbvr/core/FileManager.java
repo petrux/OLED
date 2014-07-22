@@ -11,9 +11,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
 import RefOntoUML.Association;
@@ -344,8 +341,9 @@ public class FileManager
 		StringBuilder descriptionBuilder = new StringBuilder();
 		
 		//Relator description:
-		if (class_ instanceof RefOntoUML.Relator) {
-			RefOntoUML.Relator relator = (RefOntoUML.Relator)class_;
+		if (class_ instanceof Relator) {
+			
+			Relator relator = (Relator)class_;
 			descriptionBuilder.append(myhelper.Text("An instance of a "));
 			descriptionBuilder.append(myhelper.Term(relator.getName()));
 			descriptionBuilder.append(myhelper.Text(" involves"));
