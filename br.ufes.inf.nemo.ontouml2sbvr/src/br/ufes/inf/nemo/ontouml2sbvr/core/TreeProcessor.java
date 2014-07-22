@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
 import RefOntoUML.*;
 import RefOntoUML.Class;
 
@@ -83,6 +82,8 @@ public class TreeProcessor
 		{
 			// Get the related class
 			Class c = n.getRelatedClass();
+			if (c instanceof Relator)
+				this.addDerivationsToNode(n);
 			
 			// Get the generalizations of the class
 			for (Generalization g : c.getGeneralization())
@@ -128,5 +129,11 @@ public class TreeProcessor
 	public HashMap<String, Classifier> getAssociationRoles()
 	{
 		return associationRoles;
+	}
+	
+	private void addDerivationsToNode(Node n) {
+		Relator relator = (Relator)n.getRelatedClass();
+		for (Derivation derivation : relator2derivations.get(relator))
+			n.addDerivation(derivation);
 	}
 }

@@ -1,5 +1,6 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,9 @@ public class Node
 	LinkedList<ChildPartition> childPartitions;
 	HashMap<GeneralizationSet, ChildPartition> gs2partition;
 	
+	//Derivations
+	private List<Derivation> derivations;
+	
 	public Node (Class c)
 	{
 		myclass = c;
@@ -39,6 +43,8 @@ public class Node
 		ownedAssociations = new LinkedList<Association>();
 		
 		gs2partition = new HashMap<GeneralizationSet, ChildPartition>();
+		
+		derivations = new ArrayList<>();
 	}
 	
 	public Class getRelatedClass()
@@ -154,4 +160,40 @@ public class Node
 	{
 		return ownedAssociations;
 	}	
+	
+	/**
+	 * <strong>I disagree with this design, which I consider ugly, awkward and broken.
+	 * But, still, at this phase of the project I can just fit my code to the existing one, 
+	 * following the given design.</strong>
+	 * 
+	 * @param derivation
+	 * @author petrux
+	 */
+	public void addDerivation(Derivation derivation) {
+		this.derivations.add(derivation);
+	}
+	
+	/**
+	 * <strong>I disagree with this design, which I consider ugly, awkward and broken.
+	 * But, still, at this phase of the project I can just fit my code to the existing one, 
+	 * following the given design.</strong>
+
+	 * @return
+	 * @author petrux
+	 */
+	public boolean hasDerivations() {
+		return this.derivations.size() > 0;
+	}
+	
+	/**
+	 * <strong>I disagree with this design, which I consider ugly, awkward and broken.
+	 * But, still, at this phase of the project I can just fit my code to the existing one, 
+	 * following the given design.</strong>
+
+	 * @return
+	 * @author petrux
+	 */
+	public List<Derivation> getDerivations() {
+		return this.derivations;
+	}
 }
