@@ -11,6 +11,9 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.eclipse.emf.common.util.EList;
+
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
 import RefOntoUML.Association;
@@ -19,6 +22,7 @@ import RefOntoUML.Class;
 import RefOntoUML.Classifier;
 import RefOntoUML.DataType;
 import RefOntoUML.DependencyRelationship;
+import RefOntoUML.Derivation;
 import RefOntoUML.FormalAssociation;
 import RefOntoUML.GeneralizationSet;
 import RefOntoUML.MaterialAssociation;
@@ -323,6 +327,12 @@ public class FileManager
 		}
 	}
 
+	private String cardinalityToString(int c) {
+		if (c < 0)
+			return "*";
+		return Integer.toString(c);
+	}
+	
 	/**
 	 * Create an expressive description for a given {@code Node} instance, 
 	 * containing reference to its specializations and relations it is involved in, appending
@@ -344,20 +354,48 @@ public class FileManager
 		if (class_ instanceof Relator) {
 			
 			Relator relator = (Relator)class_;
+			EList<Mediation> mediations = relator.mediations();
+			
+			//"a RELATOR instance mediates between {a..b} ROLE instances [...]"
 			descriptionBuilder.append(myhelper.Text("An instance of a "));
 			descriptionBuilder.append(myhelper.Term(relator.getName()));
-			descriptionBuilder.append(myhelper.Text(" involves"));
-			for (int i = 0; i < relator.mediated().size(); i++) {
-				Classifier role = relator.mediated().get(i);
-				descriptionBuilder.append(myhelper.Text(" a "));
-				descriptionBuilder.append(myhelper.Term(role.getName()));
-				if (i < relator.mediated().size() - 2)
-					descriptionBuilder.append(myhelper.Text(","));
-				else if (i == relator.mediated().size() - 2)
-					descriptionBuilder.append(myhelper.Text(" and"));
+			descriptionBuilder.append(myhelper.Text(" mediates between "));
+			for (int i = 0; i < mediations.size(); i++) {
+				Mediation mediation = mediations.get(i);
+				String cardinality = "{" + 
+						cardinalityToString(mediation.mediatedEnd().getLower()) + ".." + 
+						cardinalityToString(mediation.mediatedEnd().getUpper()) + "}";
+				descriptionBuilder.append(myhelper.Text(cardinality));
+				descriptionBuilder.append(myhelper.Text(" instances of "));
+				descriptionBuilder.append(myhelper.Term(mediation.mediated().getName()));
+				
+				if (i < mediations.size() - 2)
+					descriptionBuilder.append(myhelper.Text(", "));
+				else if (i == mediations.size() - 2)
+					descriptionBuilder.append(myhelper.Text(" and "));
+				else ; //pass
 			}
 			descriptionBuilder.append(myhelper.Text("."));
 			descriptionBuilder.append(myhelper.lineBreak());
+			
+			//"An instance of ROLE is involved in {a..b} RELATOR instances."
+			for (Mediation mediation : mediations) {
+				
+				//descriptionBuilder.append(myhelper.Text("."));
+				//descriptionBuilder.append(myhelper.lineBreak());
+			}
+
+			
+			/*
+			 * "From a RELATOR instance {a..b} MATERIAL relations can be
+			 * derived, each involving {c..d} ROLE#1 instances and {e..f}
+			 * ROLE#2 instances"
+			 */
+			for (Derivation derivation : node.getDerivations()) {
+				
+				//descriptionBuilder.append(myhelper.Text("."));
+				//descriptionBuilder.append(myhelper.lineBreak());
+			}
 		}
 		
 		//Child partitions
