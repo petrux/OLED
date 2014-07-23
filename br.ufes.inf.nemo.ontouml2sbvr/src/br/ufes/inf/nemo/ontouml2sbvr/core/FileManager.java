@@ -380,9 +380,17 @@ public class FileManager
 			
 			//"An instance of ROLE is involved in {a..b} RELATOR instances."
 			for (Mediation mediation : mediations) {
-				
-				//descriptionBuilder.append(myhelper.Text("."));
-				//descriptionBuilder.append(myhelper.lineBreak());
+				descriptionBuilder.append(myhelper.Text("Every instance of a "));
+				descriptionBuilder.append(myhelper.Term(mediation.mediatedEnd().getName()));
+				descriptionBuilder.append(myhelper.Text(" is involved in "));
+				String cardinality = "{" + 
+						cardinalityToString(mediation.relatorEnd().getLower()) + ".." + 
+						cardinalityToString(mediation.relatorEnd().getUpper()) + "}";
+				descriptionBuilder.append(myhelper.Text(cardinality));
+				descriptionBuilder.append(myhelper.Text(" instances of "));
+				descriptionBuilder.append(myhelper.Term(mediation.relatorEnd().getName()));
+				descriptionBuilder.append(myhelper.Text("."));
+				descriptionBuilder.append(myhelper.lineBreak());
 			}
 
 			
