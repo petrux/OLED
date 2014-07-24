@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,11 +24,13 @@ import RefOntoUML.Classifier;
 import RefOntoUML.DataType;
 import RefOntoUML.DependencyRelationship;
 import RefOntoUML.Derivation;
+import RefOntoUML.Element;
 import RefOntoUML.FormalAssociation;
 import RefOntoUML.GeneralizationSet;
 import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
+import RefOntoUML.NamedElement;
 import RefOntoUML.Property;
 import RefOntoUML.Relator;
 import RefOntoUML.SemiRigidMixinClass;
@@ -400,9 +403,50 @@ public class FileManager
 			 * ROLE#2 instances"
 			 */
 			for (Derivation derivation : node.getDerivations()) {
+				descriptionBuilder.append(myhelper.Text("From a "));
+				descriptionBuilder.append(myhelper.Term(derivation.relator().getName()));
+				descriptionBuilder.append(myhelper.Text(" instance, "));
+				String cardinality = "{" + 
+						cardinalityToString(derivation.materialEnd().getLower()) + ".." + 
+						cardinalityToString(derivation.materialEnd().getUpper()) + "}";
+				descriptionBuilder.append(myhelper.Text(cardinality));
+				descriptionBuilder.append(myhelper.Text(" "));
+				descriptionBuilder.append(myhelper.Term(derivation.materialEnd().getName()));
+				descriptionBuilder.append(myhelper.Text(
+						" relations instances can be derived, each one involving "));
+
+				MaterialAssociation material = (MaterialAssociation)derivation.material();
+				HashMap<String, Classifier> name2classifier = new HashMap<>();
+				for (Element e : material.getRelatedElement()) {
+					Classifier classifier = ((Classifier)e); 
+					String name = classifier.getQualifiedName().toLowerCase();
+					name2classifier.put(name, classifier);
+				}
 				
-				//descriptionBuilder.append(myhelper.Text("."));
-				//descriptionBuilder.append(myhelper.lineBreak());
+				for (int i = 0; i < material.getMemberEnd().size(); i++) {
+					Property p = material.getMemberEnd().get(i);
+					String propertyCardinality = "{" + 
+							cardinalityToString(p.getLower()) + ".." + 
+							cardinalityToString(p.getUpper()) + "}";
+					String propertyName = p.getQualifiedName().toLowerCase();
+					String classifierName = name2classifier.containsKey(propertyName) 
+							? name2classifier.get(propertyName).getQualifiedName()
+							: propertyName;
+					
+					descriptionBuilder.append(myhelper.Text(" "));
+					descriptionBuilder.append(myhelper.Text(propertyCardinality));
+					descriptionBuilder.append(myhelper.Text(" "));
+					descriptionBuilder.append(myhelper.Term(classifierName));
+					
+					if (i < material.getMemberEnd().size() - 2)
+						descriptionBuilder.append(myhelper.Text(", "));
+					else if (i == material.getMemberEnd().size() - 2)
+						descriptionBuilder.append(myhelper.Text(" and "));
+					else ; //pass
+				}
+				
+				descriptionBuilder.append(myhelper.Text("."));
+				descriptionBuilder.append(myhelper.lineBreak());
 			}
 		}
 		
