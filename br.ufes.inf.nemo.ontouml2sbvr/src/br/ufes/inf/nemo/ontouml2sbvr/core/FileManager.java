@@ -330,6 +330,17 @@ public class FileManager
 		}
 	}
 
+	/**
+	 * Creates a string representation of the cardinality value which is a plain 
+	 * textual representation of the integer value itself or a '*' for the value -1
+	 * 
+	 * @param c the cardinality value
+	 * @return a string representation of the cardinality value which is a plain 
+	 * textual representation of the integer value itself or a '*' for the value -1
+	 * 
+	 * @author petrux
+	 * @since 25 July 2014
+	 */
 	private String cardinalityToString(int c) {
 		if (c < 0)
 			return "*";
