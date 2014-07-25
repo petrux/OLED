@@ -470,24 +470,14 @@ public class FileManager
 						" relation can be derived, each one involving "));
 
 				MaterialAssociation material = (MaterialAssociation)derivation.material();
-				HashMap<String, Classifier> name2classifier = new HashMap<>();
-				for (Element e : material.getRelatedElement()) {
-					Classifier classifier = ((Classifier)e); 
-					String name = classifier.getQualifiedName().toLowerCase();
-					name2classifier.put(name, classifier);
-				}
-				
 				for (int i = 0; i < material.getMemberEnd().size(); i++) {
 					Property p = material.getMemberEnd().get(i);
-					String propertyName = p.getQualifiedName().toLowerCase();
-					String classifierName = name2classifier.containsKey(propertyName) 
-							? name2classifier.get(propertyName).getQualifiedName()
-							: propertyName;
+					Classifier c = (Classifier)p.getType();
 
 					descriptionBuilder.append(myhelper.Text(" "));
 					descriptionBuilder.append(myhelper.Text(verbalizeCardinality(p)));
 					descriptionBuilder.append(myhelper.Text(" of "));
-					descriptionBuilder.append(myhelper.Term(classifierName));
+					descriptionBuilder.append(myhelper.Term(c.getName()));
 					
 					if (i < material.getMemberEnd().size() - 2)
 						descriptionBuilder.append(myhelper.Text(", "));
