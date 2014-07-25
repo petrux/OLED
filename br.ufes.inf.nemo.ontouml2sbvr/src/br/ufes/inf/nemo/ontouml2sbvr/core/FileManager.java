@@ -30,6 +30,7 @@ import RefOntoUML.GeneralizationSet;
 import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
+import RefOntoUML.MultiplicityElement;
 import RefOntoUML.NamedElement;
 import RefOntoUML.Property;
 import RefOntoUML.Relator;
@@ -346,6 +347,59 @@ public class FileManager
 			return "*";
 		return Integer.toString(c);
 	}
+
+	private static final String AT_LEAST = "at least";
+	private static final String AT_MOST = "at most";
+	private static final String EXACTLY = "exactly";
+	private static final String ANY_NUMBER = "any number";
+	private static final String AND = "and";
+	private static final String OF = "of";
+	private static final String INSTANCE = "instance";
+	private static final String INSTANCES = "instances";
+
+	/**
+	 * Given a {@link MultiplicityElement}, this methods returns a 
+	 * verbalization according to the following rules:
+	 * <ul>
+	 * <li>{@code{0..*}} is translated into <i>any number of instances</i></li>
+	 * <li>{@code{1..*}} is translated into <i>at least one instance</i></li>
+	 * <li>{@code{n..*}} is translated into <i>at least n instances</i></li>
+	 * <li>{@code{0..1}} is translated into <i>at most one instance</i></li>
+	 * <li>{@code{0..n}} is translated into <i>at most n instances</i></li>
+	 * <li>{@code{1..1}} is translated into <i>exactly one instance</i></li>
+	 * <li>{@code{n..n}} is translated into <i>exactly n instances</i></li>
+	 * <li>{@code{1..m}} is translated into <i>at least one and at most m instances</i></li>
+	 * <li>{@code{n..m}} is translated into <i>at least n and at most m instances</i></li>
+	 * </ul> 
+	 * 
+	 * @param c the {@link MultiplicityElement} representing a cardinality value
+	 * @return the verbalization (i.e. a human readable textual representation) 
+	 * of the cardinality boundaries.
+	 * 
+	 * @author petrux
+	 * @since 25 July 2014
+	 */
+	private String verbalizeCardinality(MultiplicityElement c) {
+		int hi = c.upperBound();
+		int lo = c.lowerBound();
+		if (lo == 0 && hi == -1) 
+			return ANY_NUMBER + " " + OF + " " + INSTANCES;
+		if (lo == 1 && hi == -1) 
+			return AT_LEAST + " one " + INSTANCE;
+		if (lo >= 2 && hi == -1) 
+			return AT_LEAST + " " + Integer.toString(lo) + " " + INSTANCES;
+		if (lo == 0 && hi == 1) 
+			return AT_MOST + " one " + INSTANCE;
+		if (lo == 0 && hi >= 2) 
+			return AT_MOST + " " + Integer.toString(hi) + " " + INSTANCES;
+		if (lo == 1 && hi == 1 && lo == hi) 
+			return EXACTLY + " one " + INSTANCE;
+		if (lo >= 2 && hi >= 2 && lo == hi) 
+			return EXACTLY + " " + Integer.toString(lo) + " " + INSTANCES;
+		if (lo == 1 && hi >= 2) 
+			return AT_LEAST + " one " + AND + " " + AT_MOST + " " + Integer.toString(hi) + " " + INSTANCES;
+		return AT_LEAST + " " + Integer.toString(lo) + " " + AND + " " + AT_MOST + " " + Integer.toString(hi) + " " + INSTANCES;
+	}
 	
 	/**
 	 * Create an expressive description for a given {@code Node} instance, 
@@ -371,17 +425,13 @@ public class FileManager
 			EList<Mediation> mediations = relator.mediations();
 			
 			//"a RELATOR instance mediates between {a..b} ROLE instances [...]"
-			descriptionBuilder.append(myhelper.Text("An instance of a "));
+			descriptionBuilder.append(myhelper.Text("An instance of "));
 			descriptionBuilder.append(myhelper.Term(relator.getName()));
 			descriptionBuilder.append(myhelper.Text(" mediates between "));
 			for (int i = 0; i < mediations.size(); i++) {
-				Mediation mediation = mediations.get(i);
-				String cardinality = "{" + 
-						cardinalityToString(mediation.mediatedEnd().getLower()) + ".." + 
-						cardinalityToString(mediation.mediatedEnd().getUpper()) + "}";
-				descriptionBuilder.append(myhelper.Text(cardinality));
-				descriptionBuilder.append(myhelper.Text(" instances of "));
-				descriptionBuilder.append(myhelper.Term(mediation.mediated().getName()));
+				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediations.get(i).mediatedEnd())));
+				descriptionBuilder.append(myhelper.Text(" of "));
+				descriptionBuilder.append(myhelper.Term(mediations.get(i).mediated().getName()));
 				
 				if (i < mediations.size() - 2)
 					descriptionBuilder.append(myhelper.Text(", "));
@@ -394,37 +444,30 @@ public class FileManager
 			
 			//"An instance of ROLE is involved in {a..b} RELATOR instances."
 			for (Mediation mediation : mediations) {
-				descriptionBuilder.append(myhelper.Text("Every instance of a "));
+				descriptionBuilder.append(myhelper.Text("Each instance of "));
 				descriptionBuilder.append(myhelper.Term(mediation.mediated().getName()));
 				descriptionBuilder.append(myhelper.Text(" is involved in "));
-				String cardinality = "{" + 
-						cardinalityToString(mediation.relatorEnd().getLower()) + ".." + 
-						cardinalityToString(mediation.relatorEnd().getUpper()) + "}";
-				descriptionBuilder.append(myhelper.Text(cardinality));
-				descriptionBuilder.append(myhelper.Text(" instances of "));
+				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediation.relatorEnd())));
+				descriptionBuilder.append(myhelper.Term(" of "));
 				descriptionBuilder.append(myhelper.Term(mediation.relator().getName()));
 				descriptionBuilder.append(myhelper.Text("."));
 				descriptionBuilder.append(myhelper.lineBreak());
 			}
-
 			
 			/*
-			 * "From a RELATOR instance {a..b} MATERIAL relations can be
-			 * derived, each involving {c..d} ROLE#1 instances and {e..f}
-			 * ROLE#2 instances"
+			 * "From an instance of RELATOR, {a..b} instances of MATERIAL relations 
+			 * can be derived, each one involving {c..d} instances of ROLE#1 and 
+			 * {e..f} instances of ROLE#2"
 			 */
 			for (Derivation derivation : node.getDerivations()) {
-				descriptionBuilder.append(myhelper.Text("From a "));
+				descriptionBuilder.append(myhelper.Text("From an instance of "));
 				descriptionBuilder.append(myhelper.Term(derivation.relator().getName()));
-				descriptionBuilder.append(myhelper.Text(" instance, "));
-				String cardinality = "{" + 
-						cardinalityToString(derivation.materialEnd().getLower()) + ".." + 
-						cardinalityToString(derivation.materialEnd().getUpper()) + "}";
-				descriptionBuilder.append(myhelper.Text(cardinality));
-				descriptionBuilder.append(myhelper.Text(" "));
+				descriptionBuilder.append(myhelper.Text(", "));
+				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(derivation.materialEnd())));
+				descriptionBuilder.append(myhelper.Text(" of "));
 				descriptionBuilder.append(myhelper.Term(derivation.materialEnd().getName()));
 				descriptionBuilder.append(myhelper.Text(
-						" relations instances can be derived, each one involving "));
+						" relation can be derived, each one involving "));
 
 				MaterialAssociation material = (MaterialAssociation)derivation.material();
 				HashMap<String, Classifier> name2classifier = new HashMap<>();
@@ -436,17 +479,14 @@ public class FileManager
 				
 				for (int i = 0; i < material.getMemberEnd().size(); i++) {
 					Property p = material.getMemberEnd().get(i);
-					String propertyCardinality = "{" + 
-							cardinalityToString(p.getLower()) + ".." + 
-							cardinalityToString(p.getUpper()) + "}";
 					String propertyName = p.getQualifiedName().toLowerCase();
 					String classifierName = name2classifier.containsKey(propertyName) 
 							? name2classifier.get(propertyName).getQualifiedName()
 							: propertyName;
-					
+
 					descriptionBuilder.append(myhelper.Text(" "));
-					descriptionBuilder.append(myhelper.Text(propertyCardinality));
-					descriptionBuilder.append(myhelper.Text(" "));
+					descriptionBuilder.append(myhelper.Text(verbalizeCardinality(p)));
+					descriptionBuilder.append(myhelper.Text(" of "));
 					descriptionBuilder.append(myhelper.Term(classifierName));
 					
 					if (i < material.getMemberEnd().size() - 2)
