@@ -470,7 +470,7 @@ public class FileManager
 			descriptionBuilder.append(myhelper.Text(", "));
 			descriptionBuilder.append(myhelper.Text(verbalizeCardinality(derivation.materialEnd())));
 			descriptionBuilder.append(myhelper.Text(" of "));
-			descriptionBuilder.append(myhelper.Term(derivation.materialEnd().getName()));
+			descriptionBuilder.append(myhelper.Term(derivation.material().getName()));
 			descriptionBuilder.append(myhelper.Text(
 					" relation can be derived, each one involving "));
 
