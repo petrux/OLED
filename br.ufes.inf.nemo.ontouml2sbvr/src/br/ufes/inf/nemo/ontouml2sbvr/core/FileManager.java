@@ -402,6 +402,102 @@ public class FileManager
 	}
 	
 	/**
+	 * Creates an expressive description of a {@link Relator} in the following form:
+	 * <em> 
+	 * A <RELATOR> instance mediates between {a..b} <ROLE> instances [...]. 
+	 * An instance of ROLE is involved in {a..b} RELATOR instances.
+	 * From an instance of RELATOR, {a..b} instances of MATERIAL relations 
+	 * can be derived, each one involving {c..d} instances of ROLE#1, [...] 
+	 * and {e..f} instances of ROLE#N
+	 * </em> 
+	 * 
+	 * @param node the {@link Node} instance whose related class (via 
+	 * {@code node.getRelatedClass()}) is expected to be an instance of
+	 * the {@link Relator} class.
+	 * 
+	 * @return a {@link StringBuilder} representing the decription of the
+	 * given {@link Relator} instance.
+	 * 
+	 * @author petrux
+	 * @since 28 July 2014
+	 */
+	private StringBuilder describeAsRelator(Node node) {
+		StringBuilder descriptionBuilder = new StringBuilder(); 
+		Class class_ = node.getRelatedClass();
+		
+		if (!(class_ instanceof Relator)) 
+			return descriptionBuilder;
+		
+		Relator relator = (Relator)class_;
+		EList<Mediation> mediations = relator.mediations();
+		descriptionBuilder.append(myhelper.Text("An instance of "));
+		descriptionBuilder.append(myhelper.Term(relator.getName()));
+		descriptionBuilder.append(myhelper.Text(" mediates between "));
+		for (int i = 0; i < mediations.size(); i++) {
+			descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediations.get(i).mediatedEnd())));
+			descriptionBuilder.append(myhelper.Text(" of "));
+			descriptionBuilder.append(myhelper.Term(mediations.get(i).mediated().getName()));
+			
+			if (i < mediations.size() - 2)
+				descriptionBuilder.append(myhelper.Text(", "));
+			else if (i == mediations.size() - 2)
+				descriptionBuilder.append(myhelper.Text(" and "));
+			else ; //pass
+		}
+		descriptionBuilder.append(myhelper.Text("."));
+		descriptionBuilder.append(myhelper.lineBreak());
+		
+		//"An instance of ROLE is involved in {a..b} RELATOR instances."
+		for (Mediation mediation : mediations) {
+			descriptionBuilder.append(myhelper.Text("Each instance of "));
+			descriptionBuilder.append(myhelper.Term(mediation.mediated().getName()));
+			descriptionBuilder.append(myhelper.Text(" is involved in "));
+			descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediation.relatorEnd())));
+			descriptionBuilder.append(myhelper.Term(" of "));
+			descriptionBuilder.append(myhelper.Term(mediation.relator().getName()));
+			descriptionBuilder.append(myhelper.Text("."));
+			descriptionBuilder.append(myhelper.lineBreak());
+		}
+		
+		/*
+		 * "From an instance of RELATOR, {a..b} instances of MATERIAL relations 
+		 * can be derived, each one involving {c..d} instances of ROLE#1 and 
+		 * {e..f} instances of ROLE#2"
+		 */
+		for (Derivation derivation : node.getDerivations()) {
+			descriptionBuilder.append(myhelper.Text("From an instance of "));
+			descriptionBuilder.append(myhelper.Term(derivation.relator().getName()));
+			descriptionBuilder.append(myhelper.Text(", "));
+			descriptionBuilder.append(myhelper.Text(verbalizeCardinality(derivation.materialEnd())));
+			descriptionBuilder.append(myhelper.Text(" of "));
+			descriptionBuilder.append(myhelper.Term(derivation.materialEnd().getName()));
+			descriptionBuilder.append(myhelper.Text(
+					" relation can be derived, each one involving "));
+
+			MaterialAssociation material = (MaterialAssociation)derivation.material();
+			for (int i = 0; i < material.getMemberEnd().size(); i++) {
+				Property p = material.getMemberEnd().get(i);
+				Classifier c = (Classifier)p.getType();
+
+				descriptionBuilder.append(myhelper.Text(" "));
+				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(p)));
+				descriptionBuilder.append(myhelper.Text(" of "));
+				descriptionBuilder.append(myhelper.Term(c.getName()));
+				
+				if (i < material.getMemberEnd().size() - 2)
+					descriptionBuilder.append(myhelper.Text(", "));
+				else if (i == material.getMemberEnd().size() - 2)
+					descriptionBuilder.append(myhelper.Text(" and "));
+				else ; //pass
+			}
+			
+			descriptionBuilder.append(myhelper.Text("."));
+			descriptionBuilder.append(myhelper.lineBreak());
+		}
+		return descriptionBuilder;
+	}
+	
+	/**
 	 * Create an expressive description for a given {@code Node} instance, 
 	 * containing reference to its specializations and relations it is involved in, appending
 	 * it to the final HTML file.
@@ -419,77 +515,10 @@ public class FileManager
 		StringBuilder descriptionBuilder = new StringBuilder();
 		
 		//Relator description:
-		if (class_ instanceof Relator) {
-			
-			Relator relator = (Relator)class_;
-			EList<Mediation> mediations = relator.mediations();
-			
-			//"a RELATOR instance mediates between {a..b} ROLE instances [...]"
-			descriptionBuilder.append(myhelper.Text("An instance of "));
-			descriptionBuilder.append(myhelper.Term(relator.getName()));
-			descriptionBuilder.append(myhelper.Text(" mediates between "));
-			for (int i = 0; i < mediations.size(); i++) {
-				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediations.get(i).mediatedEnd())));
-				descriptionBuilder.append(myhelper.Text(" of "));
-				descriptionBuilder.append(myhelper.Term(mediations.get(i).mediated().getName()));
-				
-				if (i < mediations.size() - 2)
-					descriptionBuilder.append(myhelper.Text(", "));
-				else if (i == mediations.size() - 2)
-					descriptionBuilder.append(myhelper.Text(" and "));
-				else ; //pass
-			}
-			descriptionBuilder.append(myhelper.Text("."));
-			descriptionBuilder.append(myhelper.lineBreak());
-			
-			//"An instance of ROLE is involved in {a..b} RELATOR instances."
-			for (Mediation mediation : mediations) {
-				descriptionBuilder.append(myhelper.Text("Each instance of "));
-				descriptionBuilder.append(myhelper.Term(mediation.mediated().getName()));
-				descriptionBuilder.append(myhelper.Text(" is involved in "));
-				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(mediation.relatorEnd())));
-				descriptionBuilder.append(myhelper.Term(" of "));
-				descriptionBuilder.append(myhelper.Term(mediation.relator().getName()));
-				descriptionBuilder.append(myhelper.Text("."));
-				descriptionBuilder.append(myhelper.lineBreak());
-			}
-			
-			/*
-			 * "From an instance of RELATOR, {a..b} instances of MATERIAL relations 
-			 * can be derived, each one involving {c..d} instances of ROLE#1 and 
-			 * {e..f} instances of ROLE#2"
-			 */
-			for (Derivation derivation : node.getDerivations()) {
-				descriptionBuilder.append(myhelper.Text("From an instance of "));
-				descriptionBuilder.append(myhelper.Term(derivation.relator().getName()));
-				descriptionBuilder.append(myhelper.Text(", "));
-				descriptionBuilder.append(myhelper.Text(verbalizeCardinality(derivation.materialEnd())));
-				descriptionBuilder.append(myhelper.Text(" of "));
-				descriptionBuilder.append(myhelper.Term(derivation.materialEnd().getName()));
-				descriptionBuilder.append(myhelper.Text(
-						" relation can be derived, each one involving "));
-
-				MaterialAssociation material = (MaterialAssociation)derivation.material();
-				for (int i = 0; i < material.getMemberEnd().size(); i++) {
-					Property p = material.getMemberEnd().get(i);
-					Classifier c = (Classifier)p.getType();
-
-					descriptionBuilder.append(myhelper.Text(" "));
-					descriptionBuilder.append(myhelper.Text(verbalizeCardinality(p)));
-					descriptionBuilder.append(myhelper.Text(" of "));
-					descriptionBuilder.append(myhelper.Term(c.getName()));
-					
-					if (i < material.getMemberEnd().size() - 2)
-						descriptionBuilder.append(myhelper.Text(", "));
-					else if (i == material.getMemberEnd().size() - 2)
-						descriptionBuilder.append(myhelper.Text(" and "));
-					else ; //pass
-				}
-				
-				descriptionBuilder.append(myhelper.Text("."));
-				descriptionBuilder.append(myhelper.lineBreak());
-			}
-		}
+		if (class_ instanceof Relator)
+			descriptionBuilder.append(
+					describeAsRelator(node)
+					.toString());
 		
 		//Child partitions
 		List<ChildPartition> partitions = node.getChildPartitions();
