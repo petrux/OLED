@@ -55,7 +55,7 @@ public class FileManager
 						
 			// Create the html file
 			File f2 = new File(folder.getAbsolutePath() + File.separatorChar + name + ".html");
-			f2.deleteOnExit();
+			//f2.deleteOnExit();
 			
 			output = new BufferedWriter(new FileWriter(f2));
 			output.write(myhelper.StartDocument("SBVR Documentation: " + name));
@@ -79,8 +79,6 @@ public class FileManager
 		serial = false;
 		done = new LinkedList<Node>();
 	}
-	
-	
 	
 	private void CopyImage (String path, String imgname) throws IOException
 	{
