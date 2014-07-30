@@ -299,12 +299,15 @@ public class FileManager
 		try
 		{
 			Class c = n.getRelatedClass();
+			boolean hasToggle = this.treeNavigator.hasAssociations(c) 
+					|| c.children().size() > 0;
 			
 			if (!serial) output.write(myhelper.StartSection(c.getName()));
-					
-			DealClassBasic(c, n.hasToggle());
+			
+			DealClassBasic(c, hasToggle);
 									
-			if (n.hasToggle()) CollapsibleSection(n);
+			if (hasToggle) 
+				CollapsibleSection(n);
 			
 			if (!serial) output.write(myhelper.EndSection());
 			
@@ -486,5 +489,10 @@ public class FileManager
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private TreeNavigator treeNavigator;
+	public void addTreeNavigator(TreeNavigator treeNavigator) {
+		this.treeNavigator = treeNavigator;
 	}
 }
