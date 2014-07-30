@@ -115,10 +115,10 @@ public class Node
 		return ownedAssociations.size() != 0;
 	}
 	
-	public boolean hasToggle()
-	{
-		return hasChildren() || hasAssociations();
-	}
+//	public boolean hasToggle()
+//	{
+//		return hasChildren() || hasAssociations();
+//	}
 		
 	public void PrintHierarchy()
 	{
