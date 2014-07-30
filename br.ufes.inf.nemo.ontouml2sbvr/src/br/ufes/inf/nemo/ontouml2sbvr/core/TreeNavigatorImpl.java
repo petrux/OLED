@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
-
 import RefOntoUML.Association;
 import RefOntoUML.DataType;
 import RefOntoUML.NamedElement;
@@ -34,9 +33,24 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	
 	@Override
 	public void build(Package rootPackage) {
-		System.out.println("Here!!!");
 		this.init();
 		this.processPackage(rootPackage);
+	}
+	
+	@Override
+	public boolean hasAssociations(Class c) {
+		return this.class2associations.containsKey(c);
+	}
+	
+	@Override
+	public Iterable<Association> getAssociations(Class c) {
+		if (!this.hasAssociations(c))
+			return new LinkedList<Association>();
+		
+		List<Association> associations = new LinkedList<>();
+		for (Association a : this.class2associations.get(c))
+			associations.add(a);
+		return associations;
 	}
 	
 	private void init() {

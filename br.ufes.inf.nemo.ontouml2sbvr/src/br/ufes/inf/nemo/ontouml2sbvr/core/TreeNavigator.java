@@ -1,6 +1,8 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
+import RefOntoUML.Class;
 import RefOntoUML.Package;
+import RefOntoUML.Association;
 
 /**
  * @author petrux
@@ -16,4 +18,18 @@ public interface TreeNavigator {
 	 * @since 29 July 2014
  	 */
 	void build(Package rootPackage);
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	boolean hasAssociations(Class c);
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	Iterable<Association> getAssociations(Class c);
 }
