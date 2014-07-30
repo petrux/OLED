@@ -27,9 +27,11 @@ public class Transformation
 			return;
 		
 		Package p = (Package) o;
-			
-		myfile.serial = serial;
 		
+		myfile.serial = serial;
+		TreeNavigator treeNavigator = new TreeNavigatorImpl();
+		treeNavigator.build((RefOntoUML.Package)p);
+		myfile.addTreeNavigator(treeNavigator);
 		Tree(p);
 		
 		myfile.Done();
