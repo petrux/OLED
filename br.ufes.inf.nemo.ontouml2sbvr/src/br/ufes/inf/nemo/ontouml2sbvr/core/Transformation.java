@@ -73,19 +73,12 @@ public class Transformation
 		// Set up the specialization tree
 		myprocessor.ProcessNodes();
 		
-		List<Class> mainClasses = new LinkedList<>();
-		for (Class c : this.treeNavigator.getClasses())
+		List<Classifier> mainClasses = new LinkedList<>();
+		for (Classifier c : this.treeNavigator.getClasses())
 			if (c.parents().size() == 0)
 				mainClasses.add(c);
-		for (Class c : mainClasses)
-			myfile.DealNode(c, !myfile.serial);
-		
-		// Deal the main nodes
-//		List<Node> mainNodes = myprocessor.getMainNodes();
-//		for (Node n : mainNodes)
-//		{
-//			myfile.DealNode(n, !myfile.serial);
-//		}
+		for (Classifier c : mainClasses)
+			myfile.DealNode((Class)c, !myfile.serial);
 		
 		// Deal the DataTypes
 		for (PackageableElement pe : p.getPackagedElement())

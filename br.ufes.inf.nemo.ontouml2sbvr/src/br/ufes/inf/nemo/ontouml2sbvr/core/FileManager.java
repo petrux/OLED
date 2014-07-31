@@ -40,7 +40,7 @@ public class FileManager
 	HtmlHelper myhelper;
 	
 	boolean serial;
-	Collection<Class> done;
+	Collection<Classifier> done;
 	
 	public FileManager (File sourceFile)
 	{
@@ -107,7 +107,7 @@ public class FileManager
 		
 	}
 	
-	private LinkedList<String> getGeneralConcept(Class c)
+	private LinkedList<String> getGeneralConcept(Classifier c)
 	{
 		LinkedList<String> parents = new LinkedList<String>();
 		
@@ -229,7 +229,7 @@ public class FileManager
 		}
 	}
 	
-	private void CollapsibleSection(Class c)
+	private void CollapsibleSection(Classifier c)
 	{
 		try
 		{
@@ -289,7 +289,7 @@ public class FileManager
 		}
 	}
 	
-	public void DealNode(Class c, boolean sectionbreak)
+	public void DealNode(Classifier c, boolean sectionbreak)
 	{
 		if (serial)
 		{
@@ -320,7 +320,7 @@ public class FileManager
 		}
 	}
 		
-	private void DealClassBasic(Class c, boolean toggle)
+	private void DealClassBasic(Classifier c, boolean toggle)
 	{
 		try
 		{			

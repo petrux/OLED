@@ -24,14 +24,14 @@ import RefOntoUML.Type;
  */
 public class TreeNavigatorImpl implements TreeNavigator {
 
-	private List<Class> classes;
-	private List<Class> topClasses;
+	private List<Classifier> classes;
+	private List<Classifier> topClasses;
 	private List<Association> associations;
 	private List<DataType> dataTypes;
-	private Map<String, Class> associationRoles;
-	private Map<Class, List<Association>> class2associations;
-	private Map<Class, List<Association>> class2ownedAssociations; 
-	private Map<Class, List<Classifier>> class2solitaryChildren; 
+	private Map<String, Classifier> associationRoles;
+	private Map<Classifier, List<Association>> class2associations;
+	private Map<Classifier, List<Association>> class2ownedAssociations; 
+	private Map<Classifier, List<Classifier>> class2solitaryChildren; 
 	
 	public TreeNavigatorImpl() {
 		this.init();
@@ -44,39 +44,39 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	}
 	
 	@Override
-	public Iterable<Class> getClasses() {
+	public Iterable<Classifier> getClasses() {
 		return new LinkedList<>(this.classes);
 	}
 	
 	@Override
-	public boolean hasAssociations(Class c) {
+	public boolean hasAssociations(Classifier c) {
 		return this.class2associations.containsKey(c);
 	}
 	
 	@Override
-	public Iterable<Association> getAssociations(Class c) {
+	public Iterable<Association> getAssociations(Classifier c) {
 		if (!this.class2associations.containsKey(c))
 			return new LinkedList<Association>();
 		return new LinkedList<>(this.class2associations.get(c));
 	}
 	
 	@Override
-	public boolean hasSolitaryChildren(Class c)	{
+	public boolean hasSolitaryChildren(Classifier c)	{
 		return this.doGetSolitaryChildren(c).size() > 0;
 	}
 	
 	@Override
-	public Iterable<Classifier> getSolitatyChildren(Class c) {
+	public Iterable<Classifier> getSolitatyChildren(Classifier c) {
 		return new LinkedList<>(this.doGetSolitaryChildren(c));
 	}
 	
 	@Override
-	public boolean hasOwnedAssociations(Class c) {
+	public boolean hasOwnedAssociations(Classifier c) {
 		return this.class2ownedAssociations.containsKey(c);
 	}
 	
 	@Override
-	public Iterable<Association> getOwnedAssociations(Class c) {
+	public Iterable<Association> getOwnedAssociations(Classifier c) {
 		if (!this.class2ownedAssociations.containsKey(c))
 			return new LinkedList<>();
 		return new LinkedList<>(this.class2associations.get(c));
@@ -175,7 +175,7 @@ public class TreeNavigatorImpl implements TreeNavigator {
 		return e.getName() != null && e.getName().length() != 0;
 	}
 	
-	private List<Classifier> doGetSolitaryChildren(Class c) {
+	private List<Classifier> doGetSolitaryChildren(Classifier c) {
 		if (!this.class2solitaryChildren.containsKey(c)) {
 
 			Set<Classifier> partitioned = new HashSet<>();

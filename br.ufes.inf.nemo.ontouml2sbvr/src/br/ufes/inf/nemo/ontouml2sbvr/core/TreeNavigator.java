@@ -1,6 +1,5 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
-import RefOntoUML.Class;
 import RefOntoUML.Package;
 import RefOntoUML.Classifier;
 import RefOntoUML.Association;
@@ -24,47 +23,47 @@ public interface TreeNavigator {
 	 * 
 	 * @return
 	 */
-	Iterable<Class> getClasses();
+	Iterable<Classifier> getClasses();
 	
 	/**
 	 * 
 	 * @param c
 	 * @return
 	 */
-	boolean hasAssociations(Class c);
+	boolean hasAssociations(Classifier c);
 	
 	/**
 	 * 
 	 * @param c
 	 * @return
 	 */
-	Iterable<Association> getAssociations(Class c);
+	Iterable<Association> getAssociations(Classifier c);
 	
 	/**
 	 *
 	 * @param c
 	 * @return
 	 */
-	boolean hasSolitaryChildren(Class c);
+	boolean hasSolitaryChildren(Classifier c);
 	
 	/**
 	 * 
 	 * @param c
 	 * @return
 	 */
-	Iterable<Classifier> getSolitatyChildren(Class c);
+	Iterable<Classifier> getSolitatyChildren(Classifier c);
 	
 	/**
 	 * 
 	 * @param c
 	 * @return
 	 */
-	boolean hasOwnedAssociations(Class c);
+	boolean hasOwnedAssociations(Classifier c);
 	
 	/**
 	 * 
 	 * @param c
 	 * @return
 	 */
-	Iterable<Association> getOwnedAssociations(Class c);
+	Iterable<Association> getOwnedAssociations(Classifier c);
 }
