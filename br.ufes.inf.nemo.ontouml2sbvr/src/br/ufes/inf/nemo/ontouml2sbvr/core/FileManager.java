@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Collection;
 
 import org.eclipse.emf.common.util.EList;
 
@@ -47,7 +49,7 @@ public class FileManager
 	HtmlHelper myhelper;
 	
 	boolean serial;
-	LinkedList<Node> done;
+	Collection<Classifier> done;
 	
 	public FileManager (File sourceFile)
 	{
@@ -86,7 +88,7 @@ public class FileManager
 		}
 		
 		serial = false;
-		done = new LinkedList<Node>();
+		done = new HashSet<>();
 	}
 	
 	private void CopyImage (String path, String imgname) throws IOException
@@ -114,7 +116,7 @@ public class FileManager
 		
 	}
 	
-	private LinkedList<String> getGeneralConcept (Class c)
+	private LinkedList<String> getGeneralConcept(Classifier c)
 	{
 		LinkedList<String> parents = new LinkedList<String>();
 		
@@ -131,7 +133,7 @@ public class FileManager
 		return null;
 	}
 	
-	private String getAssociationName (Association a)
+	private String getAssociationName(Association a)
 	{
 		if (a instanceof FormalAssociation || a instanceof MaterialAssociation)
 		{
@@ -171,7 +173,7 @@ public class FileManager
 		return a.getName();
 	}
 	
-	private String getRelataName (Property p)
+	private String getRelataName(Property p)
 	{		
 		if ((p.getName() != null) && (p.getName().length() != 0))
 		{
@@ -181,7 +183,7 @@ public class FileManager
 			return p.getType().getName();		
 	}
 	
-	private String getAssociationConcept (Association a)
+	private String getAssociationConcept(Association a)
 	{	
 		if (a instanceof MaterialAssociation || a instanceof FormalAssociation || a instanceof Mediation)
 		{
@@ -199,12 +201,12 @@ public class FileManager
 		return "is-property-of fact type";				
 	}
 	
-	private boolean isAttributeAssociation (Association a)
+	private boolean isAttributeAssociation(Association a)
 	{
 		return !(a instanceof MaterialAssociation || a instanceof FormalAssociation || a instanceof DependencyRelationship || a instanceof Meronymic);
 	}
 		
-	private String getClassConcept (Classifier c)
+	private String getClassConcept(Classifier c)
 	{
 		if (c instanceof SubstanceSortal)
 		{
@@ -222,47 +224,48 @@ public class FileManager
 		}
 	}
 	
-	private void DealChildPartition (Node n, ChildPartition cp, boolean hasNext)
+	private void DealChildPartition(GeneralizationSet gs, boolean hasNext)
 	{
 		// categorization scheme
-		DealCategorization(cp.getGS());
+		DealCategorization(gs);
 		
 		// Children
-		LinkedList<Node> specifics = cp.getChildren();
+		Iterable<Classifier> specifics = gs.children();
 		
-		for (Iterator<Node> itc = specifics.iterator(); itc.hasNext();)
+		for (Iterator<Classifier> itc = specifics.iterator(); itc.hasNext();)
 		{
-			Node child = itc.next();
-			DealNode(child, (itc.hasNext() || hasNext) && !serial);
+			DealNode((Class)itc.next(), (itc.hasNext() || hasNext) && !serial);
 		}
 	}
 	
-	private void collapsibleSection (Node n)
+	private void CollapsibleSection(Classifier c)
 	{
 		try
 		{
 			if (!serial)
 			{
-				output.write(myhelper.StartCollapsibleSection(n.getRelatedClass().getName()));
+				output.write(myhelper.StartCollapsibleSection(c.getName()));
 			
 				// Partitions
-				for (Iterator<ChildPartition> itp = n.getChildPartitions().iterator(); itp.hasNext();)
+				for (Iterator<GeneralizationSet> itp = c.partitions().iterator(); itp.hasNext();)
 				{
-					DealChildPartition (n, itp.next(), itp.hasNext() || n.hasSChildren() || n.hasAssociations());
+					boolean hasNext = itp.hasNext() 
+							|| treeNavigator.hasSolitaryChildren(c) //n.hasSChildren()
+							|| treeNavigator.hasAssociations(c); //n.hasAssociations()  
+					DealChildPartition(itp.next(), hasNext);
 				}
 				
 				// Solitary Children
-				for (Iterator<Node> it = n.getSChildren().iterator(); it.hasNext();)
+				for (Iterator<Classifier> it = treeNavigator.getSolitatyChildren(c).iterator(); it.hasNext();)
 				{
-					Node child = it.next();
-					DealNode(child, it.hasNext() || n.hasAssociations());	
+					DealNode((Class)it.next(), it.hasNext() 
+							|| treeNavigator.hasAssociations(c)) ;//n.hasAssociations());	
 				}
 				
 				// Associations
-				for (Iterator<Association> it = n.getAssociations().iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getAssociations(c).iterator(); it.hasNext();)
 				{
-					Association a = it.next();
-					DealAssociation(a, it.hasNext());
+					DealAssociation(it.next(), it.hasNext());
 				}
 			
 				output.write(myhelper.EndCollapsibleSection());
@@ -270,23 +273,22 @@ public class FileManager
 			else
 			{
 				// Owned Associations
-				for (Iterator<Association> it = n.getOwnedAssociations().iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getOwnedAssociations(c).iterator(); it.hasNext();)
 				{
 					Association a = it.next();
 					DealAssociation(a, true);
 				}
 				
 				// Partitions
-				for (Iterator<ChildPartition> itp = n.getChildPartitions().iterator(); itp.hasNext();)
+				for (Iterator<GeneralizationSet> itp = c.partitions().iterator(); itp.hasNext();)
 				{
-					DealChildPartition (n, itp.next(), false);
+					DealChildPartition(itp.next(), false);
 				}
 				
 				// Solitary Children
-				for (Iterator<Node> it = n.getSChildren().iterator(); it.hasNext();)
+				for (Iterator<Classifier> it = treeNavigator.getSolitatyChildren(c).iterator(); it.hasNext();)
 				{
-					Node child = it.next();
-					DealNode(child, false);	
+					DealNode((Class)it.next(), false);	
 				}			
 			}
 		}
@@ -296,13 +298,41 @@ public class FileManager
 		}
 	}
 	
-	private void dealNodeBasic (Node n)
+	public void DealNode(Classifier c, boolean sectionbreak)
+	{
+		if (serial)
+		{
+			if (done.contains(c))
+				return;
+			done.add(c);
+		}
+		
+		try
+		{
+			boolean hasToggle = this.treeNavigator.hasAssociations(c) 
+					|| c.children().size() > 0;
+			
+			if (!serial) output.write(myhelper.StartSection(c.getName()));
+			
+			DealClassBasic(c, hasToggle);
+									
+			if (hasToggle) 
+				CollapsibleSection(c);
+			
+			if (!serial) output.write(myhelper.EndSection());
+			
+			if (sectionbreak) SectionBreaker();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+		
+	private void DealClassBasic(Classifier c, boolean toggle)
 	{
 		try
 		{			
-			Class c = n.getRelatedClass();
-			boolean toggle = n.hasToggle();
-			
 			// Noun concept name
 			output.write(myhelper.NounConcept(c.getName(), toggle && !serial, serial));
 						
@@ -314,7 +344,7 @@ public class FileManager
 			// Concept Type
 			output.write(myhelper.ConceptType(getClassConcept(c)));
 			
-			createDescription(n);
+			createDescription(c);
 			
 			// Generalization Sets (as Specific)
 			LinkedList<String> gsets = RefOntoUMLUtil.IncludedInCs(c);
@@ -411,9 +441,7 @@ public class FileManager
 	 * and {e..f} instances of ROLE#N
 	 * </em> 
 	 * 
-	 * @param node the {@link Node} instance whose related class (via 
-	 * {@code node.getRelatedClass()}) is expected to be an instance of
-	 * the {@link Relator} class.
+	 * @param relato the {@link Relator} instance to be described.
 	 * 
 	 * @return a {@link StringBuilder} representing the decription of the
 	 * given {@link Relator} instance.
@@ -421,14 +449,8 @@ public class FileManager
 	 * @author petrux
 	 * @since 28 July 2014
 	 */
-	private StringBuilder describeAsRelator(Node node) {
+	private StringBuilder describeAsRelator(Relator relator) {
 		StringBuilder descriptionBuilder = new StringBuilder(); 
-		Class class_ = node.getRelatedClass();
-		
-		if (!(class_ instanceof Relator)) 
-			return descriptionBuilder;
-		
-		Relator relator = (Relator)class_;
 		EList<Mediation> mediations = relator.mediations();
 		descriptionBuilder.append(myhelper.Text("An instance of "));
 		descriptionBuilder.append(myhelper.Term(relator.getName()));
@@ -464,7 +486,7 @@ public class FileManager
 		 * can be derived, each one involving {c..d} instances of ROLE#1 and 
 		 * {e..f} instances of ROLE#2"
 		 */
-		for (Derivation derivation : node.getDerivations()) {
+		for (Derivation derivation : this.treeNavigator.getDerivation(relator)) {
 			descriptionBuilder.append(myhelper.Text("From an instance of "));
 			descriptionBuilder.append(myhelper.Term(derivation.relator().getName()));
 			descriptionBuilder.append(myhelper.Text(", "));
@@ -502,178 +524,113 @@ public class FileManager
 	 * containing reference to its specializations and relations it is involved in, appending
 	 * it to the final HTML file.
 	 * 
-	 * @param node the {@link Node} instance to be described.
+	 * @param c the {@link Classifier} instance to be described.
 	 * @throws IOException if file writing doesn't end successfully.
 	 * 
 	 * @author petrux 
 	 * @since 10 July 2014
 	 */
 	//TODO: CREATE DESCRIPTION
-	private void createDescription(Node node) throws IOException {
-		Class class_ = node.getRelatedClass();
-		String superClassName = node.getRelatedClass().getName();
+	private void createDescription(Classifier c) throws IOException {
+		String superClassName = c.getName();
 		StringBuilder descriptionBuilder = new StringBuilder();
 		
 		//Relator description:
-		if (class_ instanceof Relator)
+		if (c instanceof Relator)
 			descriptionBuilder.append(
-					describeAsRelator(node)
+					describeAsRelator((Relator)c)
 					.toString());
 		
 		//Child partitions
-		List<ChildPartition> partitions = node.getChildPartitions();
-		if (partitions != null && partitions.size() > 0) {
-			for (ChildPartition partition : partitions) {
-				GeneralizationSet gs = partition.getGS();
-				String gsName = RefOntoUMLUtil.getGSetName(gs);
-				boolean isDisjoint = gs.isIsDisjoint();
-				boolean isComplete = gs.isIsCovering();
-				LinkedList<String> sNames = RefOntoUMLUtil.getGSetSpecificsName(gs);
-				
-				/*
-				 * According to the 
-				 * [categorization scheme|segmentation] CS, 
-				 * a SUPERCLASS
-				 * 1. {}: may be one of
-				 * 2. {disjoint}: may be at most one of
-				 * 3. {complete}: must be at least one of
-				 * 4. {disjoint, complete}: must be exactly one of
-				 * a SUBCLASS_1 or a SUBCLASS_2 or... a SUBCLASS_N
-				 */
-				
-				/*
-				 * check if we are dealing with a segmentation 
-				 * (i.e. a {disjoint, complete} generalization
-				 * set) or not.
-				 */
-				String categorizationType = (isDisjoint && isComplete) 
-						? "segmentation" 
-						: "categorization scheme"; 
-				
-				/*
-				 * Verbalize the subclassing according to the (eventual)
-				 * disjointness and/or completeness of the generalization set 
-				 */
-				String being = " may be one of ";
-				if (isDisjoint && isComplete) being = " must be exactly one of ";
-				if (isDisjoint && !isComplete) being = " may be at most one of ";
-				if (isComplete && !isDisjoint) being = " must be at least one of ";
-				
-				/*
-				 * Translate the list of subclass names into a list 
-				 * of alternatives, according to the proper SBVR
-				 * typographical conventions.
-				 */
-				boolean isFirst = true;
-				StringBuilder subclassListBuilder = new StringBuilder();
-				for (String subclassName : sNames) {
-					if (isFirst) {
-						subclassListBuilder.append(myhelper.Text("a "));
-						isFirst = false;
-					}
-					else {
-						subclassListBuilder.append(myhelper.Text(" or a "));
-					}
-					subclassListBuilder.append(myhelper.Term(subclassName));
+		for (GeneralizationSet gs : c.partitions()) {
+			String gsName = RefOntoUMLUtil.getGSetName(gs);
+			boolean isDisjoint = gs.isIsDisjoint();
+			boolean isComplete = gs.isIsCovering();
+			LinkedList<String> sNames = RefOntoUMLUtil.getGSetSpecificsName(gs);
+			
+			/*
+			 * According to the 
+			 * [categorization scheme|segmentation] CS, 
+			 * a SUPERCLASS
+			 * 1. {}: may be one of
+			 * 2. {disjoint}: may be at most one of
+			 * 3. {complete}: must be at least one of
+			 * 4. {disjoint, complete}: must be exactly one of
+			 * a SUBCLASS_1 or a SUBCLASS_2 or... a SUBCLASS_N
+			 */
+			
+			/*
+			 * check if we are dealing with a segmentation 
+			 * (i.e. a {disjoint, complete} generalization
+			 * set) or not.
+			 */
+			String categorizationType = (isDisjoint && isComplete) 
+					? "segmentation" 
+					: "categorization scheme"; 
+			
+			/*
+			 * Verbalize the subclassing according to the (eventual)
+			 * disjointness and/or completeness of the generalization set 
+			 */
+			String being = " may be one of ";
+			if (isDisjoint && isComplete) being = " must be exactly one of ";
+			if (isDisjoint && !isComplete) being = " may be at most one of ";
+			if (isComplete && !isDisjoint) being = " must be at least one of ";
+			
+			/*
+			 * Translate the list of subclass names into a list 
+			 * of alternatives, according to the proper SBVR
+			 * typographical conventions.
+			 */
+			boolean isFirst = true;
+			StringBuilder subclassListBuilder = new StringBuilder();
+			for (String subclassName : sNames) {
+				if (isFirst) {
+					subclassListBuilder.append(myhelper.Text("a "));
+					isFirst = false;
 				}
-				
-				descriptionBuilder.append(myhelper.Text("According to the "));
-				descriptionBuilder.append(myhelper.Text(categorizationType));
-				descriptionBuilder.append(myhelper.Text(" "));
-				descriptionBuilder.append(myhelper.individual(gsName));
-				descriptionBuilder.append(myhelper.Text(" a "));
-				descriptionBuilder.append(myhelper.Term(superClassName));
-				descriptionBuilder.append(myhelper.Text(being));
-				descriptionBuilder.append(subclassListBuilder.toString());
-				descriptionBuilder.append(myhelper.Text(".")); 
-				descriptionBuilder.append(myhelper.lineBreak());
+				else {
+					subclassListBuilder.append(myhelper.Text(" or a "));
+				}
+				subclassListBuilder.append(myhelper.Term(subclassName));
 			}
+			
+			descriptionBuilder.append(myhelper.Text("According to the "));
+			descriptionBuilder.append(myhelper.Text(categorizationType));
+			descriptionBuilder.append(myhelper.Text(" "));
+			descriptionBuilder.append(myhelper.individual(gsName));
+			descriptionBuilder.append(myhelper.Text(" a "));
+			descriptionBuilder.append(myhelper.Term(superClassName));
+			descriptionBuilder.append(myhelper.Text(being));
+			descriptionBuilder.append(subclassListBuilder.toString());
+			descriptionBuilder.append(myhelper.Text(".")); 
+			descriptionBuilder.append(myhelper.lineBreak());
 		}
-		
+	
 		//Solitary children.
-		List<Node> solitaryChildren = node.getSChildren();
-		if (solitaryChildren != null && solitaryChildren.size() > 0) {
-			for (Node child : solitaryChildren) {
-				descriptionBuilder.append(myhelper.Text("A ")); 	
-				descriptionBuilder.append(myhelper.Term(superClassName)); 
-				descriptionBuilder.append(myhelper.Text(" may be a ")); 
-				descriptionBuilder.append(myhelper.Term(child.getRelatedClass().getName())); 
-				descriptionBuilder.append(myhelper.Text(".")); 
+		for (Classifier child : treeNavigator.getSolitatyChildren(c)) {
+			descriptionBuilder.append(myhelper.Text("A ")); 	
+			descriptionBuilder.append(myhelper.Term(superClassName)); 
+			descriptionBuilder.append(myhelper.Text(" may be a ")); 
+			descriptionBuilder.append(myhelper.Term(child.getName())); 
+			descriptionBuilder.append(myhelper.Text(".")); 
+			descriptionBuilder.append(myhelper.lineBreak());
+			
+			if (child instanceof RefOntoUML.Role) {
+				RefOntoUML.Relator relator = ((RefOntoUML.Role)child).relator();
+				descriptionBuilder.append(myhelper.Text("A "));
+				descriptionBuilder.append(myhelper.Term(superClassName));
+				descriptionBuilder.append(myhelper.Text(" may partecipate in a relation of type "));
+				descriptionBuilder.append(myhelper.Term(relator.getName()));
+				descriptionBuilder.append(myhelper.Text(" in the role of a "));
+				descriptionBuilder.append(myhelper.Term(child.getName()));
 				descriptionBuilder.append(myhelper.lineBreak());
-				
-				Class childClass = child.getRelatedClass();
-				if (childClass instanceof RefOntoUML.Role) {
-					RefOntoUML.Relator relator = ((RefOntoUML.Role)childClass).relator();
-					descriptionBuilder.append(myhelper.Text("A "));
-					descriptionBuilder.append(myhelper.Term(superClassName));
-					descriptionBuilder.append(myhelper.Text(" may partecipate in a relation of type "));
-					descriptionBuilder.append(myhelper.Term(relator.getName()));
-					descriptionBuilder.append(myhelper.Text(" in the role of a "));
-					descriptionBuilder.append(myhelper.Term(childClass.getName()));
-					descriptionBuilder.append(myhelper.lineBreak());
-				}
 			}
 		}
 		
 		String description = descriptionBuilder.toString();
 		if (description.length() > 0)
 			output.write(myhelper.Description(description));
-	}
-	
-	public void DealNode (Node n, boolean sectionbreak)
-	{
-		/*
-		 * If the 'serial' flag has been set and the node
-		 * has already been processed, then skip it and 
-		 * return, otherwise add to the list of the processed
-		 * nodes and go on.
-		 */
-		if (serial)
-		{
-			if (done.contains(n))
-				return;
-			done.add(n);
-		}
-		
-		try
-		{
-			/*
-			 * Get the Class instance related to the
-			 * argument Node and if the 'serial' flag
-			 * is unset, create a section starter tag. 
-			 */
-			Class c = n.getRelatedClass();
-			if (!serial) 
-				output.write(
-						myhelper.StartSection(
-								c.getName()));
-			
-			/*
-			 * First add the content for the Class
-			 * associated to the node, then if the Node
-			 * hasToggle() (i.e. has children or associations)
-			 * create also a collapsible section.
-			 */
-			dealNodeBasic(n);
-			if (n.hasToggle()) 
-				collapsibleSection(n);
-			
-			/*
-			 * If the 'serial' flag is unset, close
-			 * the current section with a section
-			 * ending tag. If the 'sectionbreak' argument
-			 * is set to true, add a section break tag.
-			 */
-			if (!serial) 
-				output.write(
-						myhelper.EndSection());
-			if (sectionbreak) 
-				SectionBreaker();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public void DealAssociation (Association a, boolean sectionbreak)
@@ -805,7 +762,7 @@ public class FileManager
 		}	
 	}
 	
-	public void Done ()
+	public void Done()
 	{
 		try
 		{
@@ -816,5 +773,10 @@ public class FileManager
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private TreeNavigator treeNavigator;
+	public void addTreeNavigator(TreeNavigator treeNavigator) {
+		this.treeNavigator = treeNavigator;
 	}
 }

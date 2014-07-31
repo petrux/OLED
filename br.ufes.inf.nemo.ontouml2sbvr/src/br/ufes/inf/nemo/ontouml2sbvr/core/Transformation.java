@@ -1,6 +1,7 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class Transformation
 {
 	FileManager myfile;
 	TreeProcessor myprocessor;
+	TreeNavigator treeNavigator;
 	
 	public Transformation (File sourceFile)
 	{
@@ -27,9 +29,11 @@ public class Transformation
 			return;
 		
 		Package p = (Package) o;
-			
-		myfile.serial = serial;
 		
+		myfile.serial = serial;
+		treeNavigator = new TreeNavigatorImpl();
+		treeNavigator.build((RefOntoUML.Package)p);
+		myfile.addTreeNavigator(treeNavigator);
 		Tree(p);
 		
 		myfile.Done();
@@ -69,12 +73,12 @@ public class Transformation
 		// Set up the specialization tree
 		myprocessor.ProcessNodes();
 		
-		// Deal the main nodes
-		List<Node> mainNodes = myprocessor.getMainNodes();
-		for (Node n : mainNodes)
-		{
-			myfile.DealNode(n, !myfile.serial);
-		}
+		List<Classifier> mainClasses = new LinkedList<>();
+		for (Classifier c : this.treeNavigator.getClasses())
+			if (c.parents().size() == 0)
+				mainClasses.add(c);
+		for (Classifier c : mainClasses)
+			myfile.DealNode((Class)c, !myfile.serial);
 		
 		// Deal the DataTypes
 		for (PackageableElement pe : p.getPackagedElement())

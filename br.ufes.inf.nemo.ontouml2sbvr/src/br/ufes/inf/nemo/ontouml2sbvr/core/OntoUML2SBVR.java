@@ -42,6 +42,7 @@ public class OntoUML2SBVR
 
 			Transformation t = new Transformation(sourceFile);
 			t.Transform(p1, false);
+
 		}
 		catch (Exception e)
 		{

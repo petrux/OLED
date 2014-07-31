@@ -41,7 +41,7 @@ public class RefOntoUMLUtil
 		return specifics;
 	}
 	
-	public static LinkedList<String> IncludedInCs (Class c)
+	public static LinkedList<String> IncludedInCs (Classifier c)
 	{
 		LinkedList<String> gsets = new LinkedList<String>();
 		
