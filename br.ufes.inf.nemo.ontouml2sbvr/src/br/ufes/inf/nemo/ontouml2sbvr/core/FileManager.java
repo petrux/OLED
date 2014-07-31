@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+
+import org.eclipse.emf.common.util.EList;
 
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
@@ -230,6 +233,7 @@ public class FileManager
 	
 	private void CollapsibleSection (Node n)
 	{
+		//TODO: can remove node
 		try
 		{
 			if (!serial)
@@ -239,18 +243,22 @@ public class FileManager
 				// Partitions
 				for (Iterator<ChildPartition> itp = n.getChildPartitions().iterator(); itp.hasNext();)
 				{
-					DealChildPartition (n, itp.next(), itp.hasNext() || n.hasSChildren() || n.hasAssociations());
+					boolean hasNext = itp.hasNext() 
+							|| treeNavigator.hasSolitaryChildren(n.getRelatedClass()) //n.hasSChildren()
+							|| treeNavigator.hasAssociations(n.getRelatedClass()); //n.hasAssociations()  
+					DealChildPartition (n, itp.next(), hasNext);
 				}
 				
 				// Solitary Children
 				for (Iterator<Node> it = n.getSChildren().iterator(); it.hasNext();)
 				{
 					Node child = it.next();
-					DealNode(child, it.hasNext() || n.hasAssociations());	
+					DealNode(child, it.hasNext() 
+							|| treeNavigator.hasAssociations(n.getRelatedClass())) ;//n.hasAssociations());	
 				}
 				
 				// Associations
-				for (Iterator<Association> it = n.getAssociations().iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getAssociations(n.getRelatedClass()).iterator(); it.hasNext();)
 				{
 					Association a = it.next();
 					DealAssociation(a, it.hasNext());
@@ -261,7 +269,7 @@ public class FileManager
 			else
 			{
 				// Owned Associations
-				for (Iterator<Association> it = n.getOwnedAssociations().iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getOwnedAssociations(n.getRelatedClass()).iterator(); it.hasNext();)
 				{
 					Association a = it.next();
 					DealAssociation(a, true);

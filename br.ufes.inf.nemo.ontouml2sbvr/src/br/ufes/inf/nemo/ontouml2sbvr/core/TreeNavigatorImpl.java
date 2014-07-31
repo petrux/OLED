@@ -1,11 +1,16 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+import java.util.List;
+import java.util.HashSet;
 import java.util.HashMap;
+import java.util.LinkedList;
+
 import RefOntoUML.Association;
+import RefOntoUML.Classifier;
 import RefOntoUML.DataType;
+import RefOntoUML.GeneralizationSet;
 import RefOntoUML.NamedElement;
 import RefOntoUML.Package;
 import RefOntoUML.Class;
@@ -26,6 +31,7 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	private Map<String, Class> associationRoles;
 	private Map<Class, List<Association>> class2associations;
 	private Map<Class, List<Association>> class2ownedAssociations; 
+	private Map<Class, List<Classifier>> class2solitaryChildren; 
 	
 	public TreeNavigatorImpl() {
 		this.init();
@@ -44,13 +50,31 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	
 	@Override
 	public Iterable<Association> getAssociations(Class c) {
-		if (!this.hasAssociations(c))
+		if (!this.class2associations.containsKey(c))
 			return new LinkedList<Association>();
-		
-		List<Association> associations = new LinkedList<>();
-		for (Association a : this.class2associations.get(c))
-			associations.add(a);
-		return associations;
+		return new LinkedList<>(this.class2associations.get(c));
+	}
+	
+	@Override
+	public boolean hasSolitaryChildren(Class c)	{
+		return this.doGetSolitaryChildren(c).size() > 0;
+	}
+	
+	@Override
+	public Iterable<Classifier> getSolitatyChildren(Class c) {
+		return new LinkedList<>(this.doGetSolitaryChildren(c));
+	}
+	
+	@Override
+	public boolean hasOwnedAssociations(Class c) {
+		return this.class2ownedAssociations.containsKey(c);
+	}
+	
+	@Override
+	public Iterable<Association> getOwnedAssociations(Class c) {
+		if (!this.class2ownedAssociations.containsKey(c))
+			return new LinkedList<>();
+		return new LinkedList<>(this.class2associations.get(c));
 	}
 	
 	private void init() {
@@ -61,6 +85,7 @@ public class TreeNavigatorImpl implements TreeNavigator {
 		this.associationRoles = new HashMap<>();
 		this.class2associations = new HashMap<>();
 		this.class2ownedAssociations = new HashMap<>();
+		this.class2solitaryChildren = new HashMap<>();
 	}
 	private void processPackage(Package p) {
 		
@@ -141,7 +166,24 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	private void processDataType(DataType dt) {
 		this.dataTypes.add(dt);
 	}
-	private static boolean hasValidName(NamedElement e) {
+	private boolean hasValidName(NamedElement e) {
 		return e.getName() != null && e.getName().length() != 0;
+	}
+	
+	private List<Classifier> doGetSolitaryChildren(Class c) {
+		if (!this.class2solitaryChildren.containsKey(c)) {
+
+			Set<Classifier> partitioned = new HashSet<>();
+			for (GeneralizationSet gs : c.partitions())
+				partitioned.addAll(gs.children());
+
+			List<Classifier> solitaryChildren = new LinkedList<>();
+			for (Classifier child : c.children())
+				if (!partitioned.contains(child))
+					solitaryChildren.add(child);
+			
+			this.class2solitaryChildren.put(c, solitaryChildren);
+		}
+		return this.class2solitaryChildren.get(c);
 	}
 }
