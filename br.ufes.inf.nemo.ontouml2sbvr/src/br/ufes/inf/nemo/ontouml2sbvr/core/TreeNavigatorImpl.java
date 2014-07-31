@@ -44,6 +44,11 @@ public class TreeNavigatorImpl implements TreeNavigator {
 	}
 	
 	@Override
+	public Iterable<Class> getClasses() {
+		return new LinkedList<>(this.classes);
+	}
+	
+	@Override
 	public boolean hasAssociations(Class c) {
 		return this.class2associations.containsKey(c);
 	}

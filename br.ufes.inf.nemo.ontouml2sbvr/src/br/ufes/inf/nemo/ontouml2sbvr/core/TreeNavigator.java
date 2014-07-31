@@ -22,6 +22,12 @@ public interface TreeNavigator {
 	
 	/**
 	 * 
+	 * @return
+	 */
+	Iterable<Class> getClasses();
+	
+	/**
+	 * 
 	 * @param c
 	 * @return
 	 */

@@ -8,11 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.eclipse.emf.common.util.EList;
+import java.util.Collection;
 
 import RefOntoUML.AntiRigidMixinClass;
 import RefOntoUML.AntiRigidSortalClass;
@@ -41,7 +40,7 @@ public class FileManager
 	HtmlHelper myhelper;
 	
 	boolean serial;
-	LinkedList<Node> done;
+	Collection<Class> done;
 	
 	public FileManager (File sourceFile)
 	{
@@ -80,7 +79,7 @@ public class FileManager
 		}
 		
 		serial = false;
-		done = new LinkedList<Node>();
+		done = new HashSet<>();
 	}
 	
 	private void CopyImage (String path, String imgname) throws IOException
@@ -108,7 +107,7 @@ public class FileManager
 		
 	}
 	
-	private LinkedList<String> getGeneralConcept (Class c)
+	private LinkedList<String> getGeneralConcept(Class c)
 	{
 		LinkedList<String> parents = new LinkedList<String>();
 		
@@ -125,7 +124,7 @@ public class FileManager
 		return null;
 	}
 	
-	private String getAssociationName (Association a)
+	private String getAssociationName(Association a)
 	{
 		if (a instanceof FormalAssociation || a instanceof MaterialAssociation)
 		{
@@ -165,7 +164,7 @@ public class FileManager
 		return a.getName();
 	}
 	
-	private String getRelataName (Property p)
+	private String getRelataName(Property p)
 	{		
 		if ((p.getName() != null) && (p.getName().length() != 0))
 		{
@@ -175,7 +174,7 @@ public class FileManager
 			return p.getType().getName();		
 	}
 	
-	private String getAssociationConcept (Association a)
+	private String getAssociationConcept(Association a)
 	{	
 		if (a instanceof MaterialAssociation || a instanceof FormalAssociation || a instanceof Mediation)
 		{
@@ -193,12 +192,12 @@ public class FileManager
 		return "is-property-of fact type";				
 	}
 	
-	private boolean isAttributeAssociation (Association a)
+	private boolean isAttributeAssociation(Association a)
 	{
 		return !(a instanceof MaterialAssociation || a instanceof FormalAssociation || a instanceof DependencyRelationship || a instanceof Meronymic);
 	}
 		
-	private String getClassConcept (Classifier c)
+	private String getClassConcept(Classifier c)
 	{
 		if (c instanceof SubstanceSortal)
 		{
@@ -216,52 +215,48 @@ public class FileManager
 		}
 	}
 	
-	private void DealChildPartition (Node n, ChildPartition cp, boolean hasNext)
+	private void DealChildPartition(GeneralizationSet gs, boolean hasNext)
 	{
 		// categorization scheme
-		DealCategorization(cp.getGS());
+		DealCategorization(gs);
 		
 		// Children
-		LinkedList<Node> specifics = cp.getChildren();
+		Iterable<Classifier> specifics = gs.children();
 		
-		for (Iterator<Node> itc = specifics.iterator(); itc.hasNext();)
+		for (Iterator<Classifier> itc = specifics.iterator(); itc.hasNext();)
 		{
-			Node child = itc.next();
-			DealNode(child, (itc.hasNext() || hasNext) && !serial);
+			DealNode((Class)itc.next(), (itc.hasNext() || hasNext) && !serial);
 		}
 	}
 	
-	private void CollapsibleSection (Node n)
+	private void CollapsibleSection(Class c)
 	{
-		//TODO: can remove node
 		try
 		{
 			if (!serial)
 			{
-				output.write(myhelper.StartCollapsibleSection(n.getRelatedClass().getName()));
+				output.write(myhelper.StartCollapsibleSection(c.getName()));
 			
 				// Partitions
-				for (Iterator<ChildPartition> itp = n.getChildPartitions().iterator(); itp.hasNext();)
+				for (Iterator<GeneralizationSet> itp = c.partitions().iterator(); itp.hasNext();)
 				{
 					boolean hasNext = itp.hasNext() 
-							|| treeNavigator.hasSolitaryChildren(n.getRelatedClass()) //n.hasSChildren()
-							|| treeNavigator.hasAssociations(n.getRelatedClass()); //n.hasAssociations()  
-					DealChildPartition (n, itp.next(), hasNext);
+							|| treeNavigator.hasSolitaryChildren(c) //n.hasSChildren()
+							|| treeNavigator.hasAssociations(c); //n.hasAssociations()  
+					DealChildPartition(itp.next(), hasNext);
 				}
 				
 				// Solitary Children
-				for (Iterator<Node> it = n.getSChildren().iterator(); it.hasNext();)
+				for (Iterator<Classifier> it = treeNavigator.getSolitatyChildren(c).iterator(); it.hasNext();)
 				{
-					Node child = it.next();
-					DealNode(child, it.hasNext() 
-							|| treeNavigator.hasAssociations(n.getRelatedClass())) ;//n.hasAssociations());	
+					DealNode((Class)it.next(), it.hasNext() 
+							|| treeNavigator.hasAssociations(c)) ;//n.hasAssociations());	
 				}
 				
 				// Associations
-				for (Iterator<Association> it = treeNavigator.getAssociations(n.getRelatedClass()).iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getAssociations(c).iterator(); it.hasNext();)
 				{
-					Association a = it.next();
-					DealAssociation(a, it.hasNext());
+					DealAssociation(it.next(), it.hasNext());
 				}
 			
 				output.write(myhelper.EndCollapsibleSection());
@@ -269,23 +264,22 @@ public class FileManager
 			else
 			{
 				// Owned Associations
-				for (Iterator<Association> it = treeNavigator.getOwnedAssociations(n.getRelatedClass()).iterator(); it.hasNext();)
+				for (Iterator<Association> it = treeNavigator.getOwnedAssociations(c).iterator(); it.hasNext();)
 				{
 					Association a = it.next();
 					DealAssociation(a, true);
 				}
 				
 				// Partitions
-				for (Iterator<ChildPartition> itp = n.getChildPartitions().iterator(); itp.hasNext();)
+				for (Iterator<GeneralizationSet> itp = c.partitions().iterator(); itp.hasNext();)
 				{
-					DealChildPartition (n, itp.next(), false);
+					DealChildPartition(itp.next(), false);
 				}
 				
 				// Solitary Children
-				for (Iterator<Node> it = n.getSChildren().iterator(); it.hasNext();)
+				for (Iterator<Classifier> it = treeNavigator.getSolitatyChildren(c).iterator(); it.hasNext();)
 				{
-					Node child = it.next();
-					DealNode(child, false);	
+					DealNode((Class)it.next(), false);	
 				}			
 			}
 		}
@@ -295,18 +289,17 @@ public class FileManager
 		}
 	}
 	
-	public void DealNode (Node n, boolean sectionbreak)
+	public void DealNode(Class c, boolean sectionbreak)
 	{
 		if (serial)
 		{
-			if (done.contains(n))
+			if (done.contains(c))
 				return;
-			done.add(n);
+			done.add(c);
 		}
 		
 		try
 		{
-			Class c = n.getRelatedClass();
 			boolean hasToggle = this.treeNavigator.hasAssociations(c) 
 					|| c.children().size() > 0;
 			
@@ -315,7 +308,7 @@ public class FileManager
 			DealClassBasic(c, hasToggle);
 									
 			if (hasToggle) 
-				CollapsibleSection(n);
+				CollapsibleSection(c);
 			
 			if (!serial) output.write(myhelper.EndSection());
 			
@@ -327,7 +320,7 @@ public class FileManager
 		}
 	}
 		
-	private void DealClassBasic (Class c, boolean toggle)
+	private void DealClassBasic(Class c, boolean toggle)
 	{
 		try
 		{			
@@ -357,7 +350,7 @@ public class FileManager
 		}
 	}
 	
-	public void DealAssociation (Association a, boolean sectionbreak)
+	public void DealAssociation(Association a, boolean sectionbreak)
 	{
 		Property p1 = a.getMemberEnd().get(0);
 		Property p2 = a.getMemberEnd().get(1);
@@ -486,7 +479,7 @@ public class FileManager
 		}	
 	}
 	
-	public void Done ()
+	public void Done()
 	{
 		try
 		{
