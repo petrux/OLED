@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Collection;
@@ -26,14 +24,12 @@ import RefOntoUML.Classifier;
 import RefOntoUML.DataType;
 import RefOntoUML.DependencyRelationship;
 import RefOntoUML.Derivation;
-import RefOntoUML.Element;
 import RefOntoUML.FormalAssociation;
 import RefOntoUML.GeneralizationSet;
 import RefOntoUML.MaterialAssociation;
 import RefOntoUML.Mediation;
 import RefOntoUML.Meronymic;
 import RefOntoUML.MultiplicityElement;
-import RefOntoUML.NamedElement;
 import RefOntoUML.Property;
 import RefOntoUML.Relator;
 import RefOntoUML.SemiRigidMixinClass;
@@ -359,23 +355,6 @@ public class FileManager
 		{
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Creates a string representation of the cardinality value which is a plain 
-	 * textual representation of the integer value itself or a '*' for the value -1
-	 * 
-	 * @param c the cardinality value
-	 * @return a string representation of the cardinality value which is a plain 
-	 * textual representation of the integer value itself or a '*' for the value -1
-	 * 
-	 * @author petrux
-	 * @since 25 July 2014
-	 */
-	private String cardinalityToString(int c) {
-		if (c < 0)
-			return "*";
-		return Integer.toString(c);
 	}
 
 	private static final String AT_LEAST = "at least";

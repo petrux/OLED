@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import org.eclipse.emf.common.util.EList;
 
-import RefOntoUML.Class;
 import RefOntoUML.Classifier;
 import RefOntoUML.Generalization;
 import RefOntoUML.GeneralizationSet;
