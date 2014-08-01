@@ -14,13 +14,11 @@ import RefOntoUML.Package;
 public class Transformation
 {
 	FileManager myfile;
-	TreeProcessor myprocessor;
 	TreeNavigator treeNavigator;
 	
 	public Transformation (File sourceFile)
 	{
 		myfile = new FileManager(sourceFile);
-		myprocessor = new TreeProcessor();
 	}
 	
 	public void Transform (EObject o, boolean serial)
@@ -34,45 +32,7 @@ public class Transformation
 		treeNavigator = new TreeNavigatorImpl();
 		treeNavigator.build((RefOntoUML.Package)p);
 		myfile.addTreeNavigator(treeNavigator);
-		Tree(p);
-		
-		myfile.Done();
-	}
-	
-	public void Tree (Package p)
-	{
-		// Pre Process all classes
-		for (PackageableElement pe : p.getPackagedElement())
-		{			
-			if (pe instanceof Package)
-			{
-				this.Tree((Package)pe);
-			}
-		}
-	
-		
-		for (PackageableElement pe : p.getPackagedElement())
-		{			
-			if (pe instanceof Class)
-			{
-				myprocessor.ProcessClass((Class) pe);
-			}
-		}
-	
-		
-		
-		// Process all associations
-		for (PackageableElement pe : p.getPackagedElement())
-		{			
-			if (pe instanceof Association)
-			{
-				myprocessor.ProcessAssociation((Association) pe);
-			}
-		}
-		
-		// Set up the specialization tree
-		myprocessor.ProcessNodes();
-		
+
 		List<Classifier> mainClasses = new LinkedList<>();
 		for (Classifier c : this.treeNavigator.getClasses())
 			if (c.parents().size() == 0)
@@ -80,20 +40,12 @@ public class Transformation
 		for (Classifier c : mainClasses)
 			myfile.DealNode((Class)c, !myfile.serial);
 		
-		// Deal the DataTypes
-		for (PackageableElement pe : p.getPackagedElement())
-		{			
-			if (pe instanceof DataType)
-			{
-				myfile.DealDataType((DataType) pe);
-			}
-		}
-		
-		// Deal Association Roles
-		for (Map.Entry<String, Classifier> entry : myprocessor.getAssociationRoles().entrySet())
-		{
-			myfile.DealAssociationRole(entry.getKey(), entry.getValue());
-		}
+		for (DataType dt : treeNavigator.getDataTypes())
+			myfile.DealDataType(dt);
 
+		for (Map.Entry<String, Classifier> ar : treeNavigator.getAssociationRoles())
+			myfile.DealAssociationRole(ar.getKey(), ar.getValue());
+
+		myfile.Done();
 	}
 }

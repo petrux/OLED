@@ -87,6 +87,16 @@ public class TreeNavigatorImpl implements TreeNavigator {
 		return new LinkedList<>(this.relator2derivations.get(r));
 	}
 	
+	@Override
+	public Iterable<DataType> getDataTypes() {
+		return new LinkedList<>(this.dataTypes);
+	}
+	
+	@Override
+	public Iterable<Map.Entry<String, Classifier>> getAssociationRoles() {
+		return new LinkedList<>(this.associationRoles.entrySet());
+	}
+	
 	private void init() {
 		this.classes = new LinkedList<>();
 		this.topClasses = new LinkedList<>();

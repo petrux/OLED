@@ -1,7 +1,10 @@
 package br.ufes.inf.nemo.ontouml2sbvr.core;
 
+import java.util.Map;
+
 import RefOntoUML.Package;
 import RefOntoUML.Relator;
+import RefOntoUML.DataType;
 import RefOntoUML.Derivation;
 import RefOntoUML.Classifier;
 import RefOntoUML.Association;
@@ -75,4 +78,16 @@ public interface TreeNavigator {
 	 * @return
 	 */
 	Iterable<Derivation> getDerivation(Relator r);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Iterable<DataType> getDataTypes();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Iterable<Map.Entry<String, Classifier>> getAssociationRoles();
 }
