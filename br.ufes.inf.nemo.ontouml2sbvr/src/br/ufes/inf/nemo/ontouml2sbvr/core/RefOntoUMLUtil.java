@@ -88,31 +88,4 @@ public class RefOntoUMLUtil
 		
 		return gsName;
 	}
-	
-	/*public String getGSets (Class c)
-	{
-		String gsets = null;
-		
-		// For every Generalization, get the Generalization Set
-		for (Iterator<Generalization> gens = c.getGeneralization().iterator(); gens.hasNext(); )
-		{
-			// Considering that every Generalization has at most one Generalization Set
-			Generalization g = gens.next();
-			
-			// If there is a Generalization Set
-			if (g.getGeneralizationSet().size() > 0)
-			{
-				GeneralizationSet gs = g.getGeneralizationSet().get(0);
-				
-				if (gsets == null)
-					gsets = "";
-				else
-					gsets += " and ";
-				
-				gsets += getGSetName(gs);
-			}
-		}
-					
-		return gsets;
-	}*/
 }
