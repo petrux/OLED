@@ -1,49 +1,18 @@
 <?xml version="1.0" encoding="ASCII"?>
 <RefOntoUML:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:RefOntoUML="http://nemo.inf.ufes.br/ontouml/refontouml" xmi:id="_-XeuYRC2EeSYucQ-emqBug" name="Model">
-  <packagedElement xsi:type="RefOntoUML:Role" xmi:id="_DKJMIBC3EeSYucQ-emqBug" name="Patient" visibility="public">
-    <generalization xmi:id="_F-bRoBC3EeSYucQ-emqBug" general="_ETk5YBC3EeSYucQ-emqBug"/>
+  <packagedElement xsi:type="RefOntoUML:Kind" xmi:id="_jQaTQSlIEeSxv-PWpOjq5w" name="Person" visibility="public"/>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_o9-6EClIEeSxv-PWpOjq5w" name="Man" visibility="public">
+    <generalization xmi:id="_sbQ5QClIEeSxv-PWpOjq5w" general="_jQaTQSlIEeSxv-PWpOjq5w" generalizationSet="_t_fsIClIEeSxv-PWpOjq5w"/>
   </packagedElement>
-  <packagedElement xsi:type="RefOntoUML:Kind" xmi:id="_ETk5YBC3EeSYucQ-emqBug" name="Person" visibility="public"/>
-  <packagedElement xsi:type="RefOntoUML:Relator" xmi:id="_GzFowBC3EeSYucQ-emqBug" name="Treatment" visibility="public"/>
-  <packagedElement xsi:type="RefOntoUML:Kind" xmi:id="_JbxiQBC3EeSYucQ-emqBug" name="MedUnit" visibility="public"/>
-  <packagedElement xsi:type="RefOntoUML:Mediation" xmi:id="_LAVFQBC3EeSYucQ-emqBug" name="Mediation1" visibility="public" memberEnd="_LAVFQRC3EeSYucQ-emqBug _LAVFRBC3EeSYucQ-emqBug" navigableOwnedEnd="_LAVFQRC3EeSYucQ-emqBug _LAVFRBC3EeSYucQ-emqBug">
-    <ownedEnd xmi:id="_LAVFQRC3EeSYucQ-emqBug" name="treatment" type="_GzFowBC3EeSYucQ-emqBug" association="_LAVFQBC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_SAofQRC3EeSYucQ-emqBug" value="-1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_SAofQBC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
-    <ownedEnd xmi:id="_LAVFRBC3EeSYucQ-emqBug" name="patient" type="_DKJMIBC3EeSYucQ-emqBug" isReadOnly="true" association="_LAVFQBC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_SAofQxC3EeSYucQ-emqBug" value="1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_SAofQhC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_rH7pIClIEeSxv-PWpOjq5w" name="Woman" visibility="public">
+    <generalization xmi:id="_tYNCoClIEeSxv-PWpOjq5w" general="_jQaTQSlIEeSxv-PWpOjq5w" generalizationSet="_t_fsIClIEeSxv-PWpOjq5w"/>
   </packagedElement>
-  <packagedElement xsi:type="RefOntoUML:Mediation" xmi:id="_TYwv0BC3EeSYucQ-emqBug" name="Mediation2" visibility="public" memberEnd="_TYxW4BC3EeSYucQ-emqBug _TYxW4xC3EeSYucQ-emqBug" navigableOwnedEnd="_TYxW4BC3EeSYucQ-emqBug _TYxW4xC3EeSYucQ-emqBug">
-    <ownedEnd xmi:id="_TYxW4BC3EeSYucQ-emqBug" name="treatment" type="_GzFowBC3EeSYucQ-emqBug" isReadOnly="true" association="_TYwv0BC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_X3PGQRC3EeSYucQ-emqBug" value="-1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_X3PGQBC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
-    <ownedEnd xmi:id="_TYxW4xC3EeSYucQ-emqBug" name="medunit" type="_JbxiQBC3EeSYucQ-emqBug" isReadOnly="true" association="_TYwv0BC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_X3PtUBC3EeSYucQ-emqBug" value="1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_X3PGQhC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
+  <packagedElement xsi:type="RefOntoUML:GeneralizationSet" xmi:id="_t_fsIClIEeSxv-PWpOjq5w" name="Gender" visibility="public" isCovering="true" isDisjoint="true" generalization="_sbQ5QClIEeSxv-PWpOjq5w _tYNCoClIEeSxv-PWpOjq5w"/>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_vY_1sClIEeSxv-PWpOjq5w" name="ProperMan" visibility="public">
+    <generalization xmi:id="_3aJBoClIEeSxv-PWpOjq5w" general="_o9-6EClIEeSxv-PWpOjq5w" generalizationSet="_5pbjsClIEeSxv-PWpOjq5w"/>
   </packagedElement>
-  <packagedElement xsi:type="RefOntoUML:MaterialAssociation" xmi:id="_ZdaZ4BC3EeSYucQ-emqBug" name="Material1" visibility="public" memberEnd="_ZdaZ4RC3EeSYucQ-emqBug _ZdaZ5BC3EeSYucQ-emqBug" isDerived="true" navigableOwnedEnd="_ZdaZ4RC3EeSYucQ-emqBug _ZdaZ5BC3EeSYucQ-emqBug">
-    <ownedEnd xmi:id="_ZdaZ4RC3EeSYucQ-emqBug" name="patient" type="_DKJMIBC3EeSYucQ-emqBug" association="_ZdaZ4BC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_beZaMRC3EeSYucQ-emqBug" value="-1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_beZaMBC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
-    <ownedEnd xmi:id="_ZdaZ5BC3EeSYucQ-emqBug" name="medunit" type="_JbxiQBC3EeSYucQ-emqBug" association="_ZdaZ4BC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_beZaMxC3EeSYucQ-emqBug" value="-1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_beZaMhC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_yM-ZMClIEeSxv-PWpOjq5w" name="Quaquaraqua" visibility="public">
+    <generalization xmi:id="_4l0KkClIEeSxv-PWpOjq5w" general="_o9-6EClIEeSxv-PWpOjq5w" generalizationSet="_5pbjsClIEeSxv-PWpOjq5w"/>
   </packagedElement>
-  <packagedElement xsi:type="RefOntoUML:Derivation" xmi:id="_cQAdUBC3EeSYucQ-emqBug" name="Derivation1" visibility="public" memberEnd="_cQBEYBC3EeSYucQ-emqBug _cQBEYxC3EeSYucQ-emqBug" navigableOwnedEnd="_cQBEYBC3EeSYucQ-emqBug _cQBEYxC3EeSYucQ-emqBug">
-    <ownedEnd xmi:id="_cQBEYBC3EeSYucQ-emqBug" name="material1" type="_ZdaZ4BC3EeSYucQ-emqBug" association="_cQAdUBC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_eDlTwRC3EeSYucQ-emqBug" value="-1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_eDlTwBC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
-    <ownedEnd xmi:id="_cQBEYxC3EeSYucQ-emqBug" name="treatment" type="_GzFowBC3EeSYucQ-emqBug" isReadOnly="true" association="_cQAdUBC3EeSYucQ-emqBug">
-      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_eDlTwxC3EeSYucQ-emqBug" value="1"/>
-      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_eDlTwhC3EeSYucQ-emqBug" value="1"/>
-    </ownedEnd>
-  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:GeneralizationSet" xmi:id="_5pbjsClIEeSxv-PWpOjq5w" name="SubMan" visibility="public" isCovering="true" isDisjoint="true" generalization="_3aJBoClIEeSxv-PWpOjq5w _4l0KkClIEeSxv-PWpOjq5w"/>
 </RefOntoUML:Model>
